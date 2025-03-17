@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
   Box,
   Card,
@@ -70,7 +70,7 @@ const CasesListContainer = () => {
     if (sortParam) setSortBy(sortParam);
 
     fetchCases();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const fetchCases = async () => {
@@ -123,7 +123,6 @@ const CasesListContainer = () => {
     setSearchTerm(event.target.value);
   };
 
-
   const handleSortChange = (event: SelectChangeEvent) => {
     setSortBy(event.target.value);
     updateUrlParams({ sort: event.target.value });
@@ -144,122 +143,124 @@ const CasesListContainer = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        사례 모음
-      </Typography>
+    <Suspense>
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          사례 모음
+        </Typography>
 
-      <Typography variant="body1" color="textSecondary" paragraph>
-        다양한 연애 갈등 사례와 AI 판결 결과를 확인해보세요.
-      </Typography>
+        <Typography variant="body1" color="textSecondary" paragraph>
+          다양한 연애 갈등 사례와 AI 판결 결과를 확인해보세요.
+        </Typography>
 
-      <FilterSection>
-        <SearchBox>
-          <TextField
-            fullWidth
-            placeholder="제목, 내용, 태그로 검색"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-        </SearchBox>
+        <FilterSection>
+          <SearchBox>
+            <TextField
+              fullWidth
+              placeholder="제목, 내용, 태그로 검색"
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+          </SearchBox>
 
-        <FilterControls>
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>카테고리</InputLabel>
-            <Select value={category} label="카테고리" onChange={handleCategoryChange}>
-              {categories.map((cat) => (
-                <MenuItem key={cat.value} value={cat.value}>
-                  {cat.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <FilterControls>
+            <FormControl size="small" sx={{ minWidth: 150 }}>
+              <InputLabel>카테고리</InputLabel>
+              <Select value={category} label="카테고리" onChange={handleCategoryChange}>
+                {categories.map((cat) => (
+                  <MenuItem key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>정렬</InputLabel>
-            <Select
-              value={sortBy}
-              label="정렬"
-              onChange={handleSortChange}
-              startAdornment={<SortOutlined sx={{ mr: 1 }} />}
-            >
-              <MenuItem value="latest">최신순</MenuItem>
-              <MenuItem value="popular">인기순</MenuItem>
-            </Select>
-          </FormControl>
-        </FilterControls>
-      </FilterSection>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel>정렬</InputLabel>
+              <Select
+                value={sortBy}
+                label="정렬"
+                onChange={handleSortChange}
+                startAdornment={<SortOutlined sx={{ mr: 1 }} />}
+              >
+                <MenuItem value="latest">최신순</MenuItem>
+                <MenuItem value="popular">인기순</MenuItem>
+              </Select>
+            </FormControl>
+          </FilterControls>
+        </FilterSection>
 
-      {loading ? (
-        <LinearProgress />
-      ) : cases.length === 0 ? (
-        <EmptyState>
-          <Typography variant="h6" align="center">
-            검색 결과가 없습니다.
-          </Typography>
-          <Typography variant="body2" align="center" color="textSecondary">
-            다른 검색어나 필터를 시도해보세요.
-          </Typography>
-        </EmptyState>
-      ) : (
-        <CasesList>
-          {cases.map((caseItem) => (
-            <CaseCard key={caseItem.id}>
-              <CardActionArea component={Link} href={`/case/${caseItem.id}`}>
-                <CardContent>
-                  <CaseTitle variant="h6">{caseItem.title}</CaseTitle>
+        {loading ? (
+          <LinearProgress />
+        ) : cases.length === 0 ? (
+          <EmptyState>
+            <Typography variant="h6" align="center">
+              검색 결과가 없습니다.
+            </Typography>
+            <Typography variant="body2" align="center" color="textSecondary">
+              다른 검색어나 필터를 시도해보세요.
+            </Typography>
+          </EmptyState>
+        ) : (
+          <CasesList>
+            {cases.map((caseItem) => (
+              <CaseCard key={caseItem.id}>
+                <CardActionArea component={Link} href={`/case/${caseItem.id}`}>
+                  <CardContent>
+                    <CaseTitle variant="h6">{caseItem.title}</CaseTitle>
 
-                  <CaseMeta>
-                    <MetaItem>
-                      <AccessTimeOutlined fontSize="small" />
-                      <Typography variant="body2">{dayjs(caseItem.created_at).fromNow()}</Typography>
-                    </MetaItem>
-                    <MetaItem>
-                      <VisibilityOutlined fontSize="small" />
-                      <Typography variant="body2">{caseItem.view_count}</Typography>
-                    </MetaItem>
-                  </CaseMeta>
+                    <CaseMeta>
+                      <MetaItem>
+                        <AccessTimeOutlined fontSize="small" />
+                        <Typography variant="body2">{dayjs(caseItem.created_at).fromNow()}</Typography>
+                      </MetaItem>
+                      <MetaItem>
+                        <VisibilityOutlined fontSize="small" />
+                        <Typography variant="body2">{caseItem.view_count}</Typography>
+                      </MetaItem>
+                    </CaseMeta>
 
-                  <CaseDescription variant="body2" color="textSecondary">
-                    {caseItem.description.length > 100
-                      ? `${caseItem.description.substring(0, 100)}...`
-                      : caseItem.description}
-                  </CaseDescription>
+                    <CaseDescription variant="body2" color="textSecondary">
+                      {caseItem.description.length > 100
+                        ? `${caseItem.description.substring(0, 100)}...`
+                        : caseItem.description}
+                    </CaseDescription>
 
-                  <CaseTags>
-                    {caseItem.category && (
-                      <Chip label={caseItem.category} size="small" color="primary" variant="outlined" />
-                    )}
-                    {caseItem.tags.slice(0, 3).map((tag, index) => (
-                      <Chip key={index} label={tag} size="small" variant="outlined" />
-                    ))}
-                    {caseItem.tags.length > 3 && (
-                      <Typography variant="caption" color="textSecondary">
-                        +{caseItem.tags.length - 3}
-                      </Typography>
-                    )}
-                  </CaseTags>
+                    <CaseTags>
+                      {caseItem.category && (
+                        <Chip label={caseItem.category} size="small" color="primary" variant="outlined" />
+                      )}
+                      {caseItem.tags.slice(0, 3).map((tag, index) => (
+                        <Chip key={index} label={tag} size="small" variant="outlined" />
+                      ))}
+                      {caseItem.tags.length > 3 && (
+                        <Typography variant="caption" color="textSecondary">
+                          +{caseItem.tags.length - 3}
+                        </Typography>
+                      )}
+                    </CaseTags>
 
-                  <CaseStatus>
-                    <StatusChip
-                      label={caseItem.status === "completed" ? "판결 완료" : "판결 중"}
-                      size="small"
-                      color={caseItem.status === "completed" ? "success" : "warning"}
-                    />
-                  </CaseStatus>
-                </CardContent>
-              </CardActionArea>
-            </CaseCard>
-          ))}
-        </CasesList>
-      )}
+                    <CaseStatus>
+                      <StatusChip
+                        label={caseItem.status === "completed" ? "판결 완료" : "판결 중"}
+                        size="small"
+                        color={caseItem.status === "completed" ? "success" : "warning"}
+                      />
+                    </CaseStatus>
+                  </CardContent>
+                </CardActionArea>
+              </CaseCard>
+            ))}
+          </CasesList>
+        )}
 
-      {totalCount > limit && (
-        <PaginationContainer>
-          <Pagination count={Math.ceil(totalCount / limit)} page={page} onChange={handlePageChange} color="primary" />
-        </PaginationContainer>
-      )}
-    </Container>
+        {totalCount > limit && (
+          <PaginationContainer>
+            <Pagination count={Math.ceil(totalCount / limit)} page={page} onChange={handlePageChange} color="primary" />
+          </PaginationContainer>
+        )}
+      </Container>
+    </Suspense>
   );
 };
 
