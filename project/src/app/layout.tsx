@@ -14,10 +14,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "연애재판 - AI 기반 연애 논쟁 판결 서비스",
     description: "AI를 활용한 연애 관련 논쟁 판별 및 법률 기반 객관적 판단을 제공하는 서비스",
-    url: "https://lovecourt.vercel.app",
+    url: `${process.env.NEXT_PUBLIC_API_BASE_URL}`,
     images: [
       {
-        url: "https://lovecourt.vercel.app/img/og.png",
+        url: `${process.env.NEXT_PUBLIC_API_BASE_URL}/img/og.png`,
         width: 1200,
         height: 630,
         alt: "LoveCourt-logo",
