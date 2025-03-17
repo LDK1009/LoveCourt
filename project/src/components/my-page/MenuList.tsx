@@ -1,3 +1,5 @@
+"use client";
+
 import { CommonGrayTypography } from "@/styles/CommonComponents";
 import { mixinFlex } from "@/styles/mixins";
 import { styled, Typography } from "@mui/material";
