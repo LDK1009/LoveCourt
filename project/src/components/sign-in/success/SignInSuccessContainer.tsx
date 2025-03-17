@@ -35,7 +35,7 @@ const SignInSuccessContainer = () => {
           로그인 완료!
         </HeadingText>
         <BodyText variant="body2" align="center">
-          Uni-Q의 다양한 서비스를 이용해보세요
+          연애재판의 다양한 서비스를 이용해보세요
         </BodyText>
       </TextWrap>
 

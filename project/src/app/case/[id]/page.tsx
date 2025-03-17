@@ -3,11 +3,8 @@ import CaseDetailContainer from "@/components/case/detail/CaseDetailContainer";
 import { supabase } from "@/lib/supabaseClient";
 import { notFound } from "next/navigation";
 
-interface CaseDetailPageProps {
-  params: {
-    id: string;
-  };
-}
+// ✨ Next.js 15에서는 파라미터를 비동기적으로 처리해야 함
+type PropsType = Promise<{ id: string; }>
 
 async function getCaseData(id: number) {
   try {
@@ -21,22 +18,29 @@ async function getCaseData(id: number) {
   }
 }
 
-export async function generateMetadata({ params }: CaseDetailPageProps): Promise<Metadata> {
-  const id = params.id ? parseInt(params.id) : null;
+// ✨ 동적 메타데이터 생성 함수 수정
+export async function generateMetadata({ params }: { params: PropsType }): Promise<Metadata> {
+  const { id } = await params; // ✨ 비동기 파라미터 처리
+  const numId = parseInt(id);
 
-  if (!id || isNaN(id)) {
+  if (!numId || isNaN(numId)) {
     return {
       title: "잘못된 사례 ID | 연애재판",
       description: "AI 기반 연애 논쟁 판결 서비스",
     };
   }
 
-  const caseData = await getCaseData(id);
+  const caseData = await getCaseData(numId);
 
   if (caseData) {
     return {
       title: `${caseData.title} | 연애재판`,
       description: caseData.description.substring(0, 160),
+      openGraph: {
+        title: `${caseData.title} | 연애재판`,
+        description: caseData.description.substring(0, 160),
+        url: `/case/${id}`,
+      },
     };
   }
 
@@ -46,18 +50,20 @@ export async function generateMetadata({ params }: CaseDetailPageProps): Promise
   };
 }
 
-export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
-  const id = params.id ? parseInt(params.id) : null;
+// ✨ 페이지 컴포넌트 수정
+export default async function CaseDetailPage({ params }: { params: PropsType }) {
+  const { id } = await params; // ✨ 비동기 파라미터 처리
+  const numId = parseInt(id);
 
-  if (!id || isNaN(id)) {
+  if (!numId || isNaN(numId)) {
     notFound();
   }
 
-  const caseData = await getCaseData(id);
+  const caseData = await getCaseData(numId);
 
   if (!caseData) {
     notFound();
   }
 
-  return <CaseDetailContainer caseId={id} />;
+  return <CaseDetailContainer caseId={numId} />;
 }

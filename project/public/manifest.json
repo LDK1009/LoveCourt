@@ -1,7 +1,7 @@
 {
-  "name": "Uni-Q",
-  "short_name": "Uni-Q",
-  "description": "대학교 학과별 면접 질문 플랫폼",
+  "name": "연애재판 - AI 기반 연애 논쟁 판결 서비스",
+  "short_name": "연애재판",
+  "description": "AI를 활용한 연애 관련 논쟁 판별 및 법률 기반 객관적 판단을 제공하는 서비스",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "display": "standalone",
