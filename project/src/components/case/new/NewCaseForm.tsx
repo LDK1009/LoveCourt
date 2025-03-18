@@ -1,6 +1,6 @@
 "use client"; // 클라이언트 컴포넌트 선언
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Button, Container, Paper, Step, StepLabel, Stepper, Typography, styled } from "@mui/material"; // Material UI 컴포넌트 임포트
 import { useRouter } from "next/navigation"; // Next.js 라우터 훅
 import { enqueueSnackbar } from "notistack"; // 알림 표시 라이브러리
@@ -9,13 +9,15 @@ import { createCase } from "@/service/cases"; // 케이스 생성 API 함수
 import ConflictDescriptionStep from "./steps/ConflictDescriptionStep"; // 단계별 컴포넌트 임포트
 import AdditionalInfoStep from "./steps/AdditionalInfoStep";
 import ReviewSubmitStep from "./steps/ReviewSubmitStep";
+import { getCurrentUserIsSignIn } from "@/service/auth";
 
 // 단계 제목 배열
 const steps = ["갈등 상황 설명", "추가 정보 입력", "검토 및 제출"];
 
 const NewCaseForm = () => {
   const router = useRouter(); // 라우터 인스턴스
-  // const { user } = useAuthStore(); // 사용자 인증 정보
+  const [isSignIn, setIsSignIn] = useState(false); // 로그인 여부 상태 추가
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
   const [activeStep, setActiveStep] = useState(0); // 현재 활성화된 단계
   const [caseData, setCaseData] = useState({
     title: "", // 제목
@@ -28,6 +30,22 @@ const NewCaseForm = () => {
     tags: [] as string[], // 태그 배열
   });
   const [currentTag, setCurrentTag] = useState(""); // 현재 입력 중인 태그
+
+  // 로그인 여부 확인을 위한 useEffect 추가
+  useEffect(() => {
+    const checkAuth = async () => {
+      const isUserSignedIn = await getCurrentUserIsSignIn();
+      setIsSignIn(isUserSignedIn);
+      setIsLoading(false);
+
+      if (!isUserSignedIn) {
+        enqueueSnackbar("로그인 후 이용해주세요.", { variant: "warning" });
+        router.push("/auth/sign-in");
+      }
+    };
+
+    checkAuth();
+  }, [isSignIn, router]);
 
   // 다음 단계로 이동하는 함수
   const handleNext = () => {
@@ -85,6 +103,19 @@ const NewCaseForm = () => {
     const response = await createCase(caseData);
     router.push(`/case/${response?.data?.id}`); // 생성된 케이스 페이지로 이동
   };
+
+  // 로딩 중일 때 표시할 내용
+  if (isLoading) {
+    return (
+      <Container maxWidth="md">
+        <FormPaper>
+          <Typography variant="h6" align="center">
+            로딩 중...
+          </Typography>
+        </FormPaper>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="md">

@@ -28,6 +28,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
+import ButtonGroup from "./ButtonGroup";
 
 dayjs.locale("ko");
 
@@ -124,6 +125,10 @@ const MyPageContainer = () => {
           </Typography>
         </Box>
       </ProfileSection>
+
+      <Box sx={{ mt: 2, mb: 2 }}>
+        <ButtonGroup />
+      </Box>
 
       <Divider sx={{ my: 3 }} />
 
