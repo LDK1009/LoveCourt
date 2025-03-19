@@ -47,7 +47,7 @@ const ReviewSubmitStep = ({ caseData }: ReviewSubmitStepProps) => {
       </ReviewItem>
       
       <ReviewItem>
-        <Typography variant="subtitle1" fontWeight="bold">관계:</Typography>
+        <Typography variant="subtitle1" fontWeight="bold">연애 관계:</Typography>
         <Typography variant="body1">{caseData.relationship} ({caseData.duration})</Typography>
       </ReviewItem>
       

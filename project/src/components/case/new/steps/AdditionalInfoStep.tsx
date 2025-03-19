@@ -40,28 +40,28 @@ const AdditionalInfoStep = ({
       <Grid>
         <TextField
           fullWidth
-          label="당사자 A"
+          label="원고(고소인)"
           name="person_a"
           value={caseData.person_a}
           onChange={handleChange}
-          placeholder="예: 여자친구"
+          placeholder="ex) 여자친구"
           margin="normal"
           required
         />
         <TextField
           fullWidth
-          label="당사자 B"
+          label="피고(피고소인)"
           name="person_b"
           value={caseData.person_b}
           onChange={handleChange}
-          placeholder="예: 남자친구"
+          placeholder="ex) 남자친구"
           margin="normal"
           required
         />
       </Grid>
 
       <FormControl component="fieldset" margin="normal">
-        <FormLabel component="legend">관계</FormLabel>
+        <FormLabel component="legend">연애 관계</FormLabel>
         <RadioGroup row name="relationship" value={caseData.relationship} onChange={handleChange}>
           <FormControlLabel value="연인" control={<Radio />} label="연인" />
           <FormControlLabel value="부부" control={<Radio />} label="부부" />
@@ -72,7 +72,7 @@ const AdditionalInfoStep = ({
 
       <TextField
         fullWidth
-        label="관계 기간"
+        label="연애 기간"
         name="duration"
         value={caseData.duration}
         onChange={handleChange}
@@ -92,7 +92,9 @@ const AdditionalInfoStep = ({
       </FormControl>
 
       <Box sx={{ mt: 2 }}>
-        <FormLabel component="legend">태그</FormLabel>
+        <FormLabel component="legend" sx={{ mb: 1 }}>
+          태그
+        </FormLabel>
         <TagInputContainer>
           <TextField
             label="태그 추가"

@@ -47,10 +47,10 @@ ${caseData.title}
 ${caseData.description}
 
 ## 당사자 정보
-- 당사자 A: ${caseData.person_a}
-- 당사자 B: ${caseData.person_b}
-- 관계: ${caseData.relationship}
-- 관계 기간: ${caseData.duration}
+- 원고(고소인): ${caseData.person_a}
+- 피고(피고소인): ${caseData.person_b}
+- 연애 관계: ${caseData.relationship}
+- 연애 기간: ${caseData.duration}
 - 카테고리: ${caseData.category}
 `;
 

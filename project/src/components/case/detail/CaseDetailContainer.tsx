@@ -248,12 +248,12 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <Typography variant="body2" color="text.secondary">
-                관계: {caseData.relationship}
+                연애 관계: {caseData.relationship}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="body2" color="text.secondary">
-                관계 기간: {caseData.duration}
+                연애 기간: {caseData.duration}
               </Typography>
             </Grid>
             <Grid item xs={12}>
