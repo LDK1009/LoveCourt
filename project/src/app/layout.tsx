@@ -4,6 +4,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import CommonBottomNavigation from "@/components/common/CommonBottomNavigation";
 import ClientSnackbarProvider from "@/lib/ClientSnackbarProvider";
 import Header from "@/components/common/Header";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 // SEO 메타데이터
 export const metadata: Metadata = {
@@ -68,6 +69,7 @@ export default function RootLayout({
           </ThemeProviderWrapper>
         </AppRouterCacheProvider>
       </body>
+      <GoogleAnalytics gaId="AW-16921971256" />
     </html>
   );
 }
