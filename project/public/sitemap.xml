@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://www.love-court.site/</loc>
+  <lastmod>2025-03-19T07:51:04+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://www.love-court.site/cases</loc>
+  <lastmod>2025-03-19T07:51:04+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.love-court.site/case/new</loc>
+  <lastmod>2025-03-19T07:51:04+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.love-court.site/auth/sign-in</loc>
+  <lastmod>2025-03-19T07:51:04+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.love-court.site/my-page</loc>
+  <lastmod>2025-03-19T07:51:04+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+
+
+</urlset>
