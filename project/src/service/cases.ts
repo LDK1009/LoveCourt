@@ -9,17 +9,13 @@ export async function createCase(caseData: CaseInput) {
   // 로그인 여부 확인
   const response = await supabase.auth.getUser();
 
-  if (response.error) {
-    enqueueSnackbar("로그인이 필요합니다.", { variant: "error" });
-    return;
-  }
 
   // 케이스 생성
   const caseResponse = await supabase
     .from("cases")
     .insert({
       ...caseData,
-      user_id: response.data.user.id,
+      user_id: response.data.user?.id,
       status: "pending",
       view_count: 0,
     })
