@@ -82,7 +82,7 @@ const CasesListBox = () => {
       // 검색어 필터링 (클라이언트 사이드)
       let filteredData = data;
       if (searchTerm) {
-        filteredData = data.filter(
+        filteredData = data?.filter(
           (item: Case) =>
             item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -91,7 +91,7 @@ const CasesListBox = () => {
       }
 
       // 정렬
-      filteredData.sort((a: Case, b: Case) => {
+      filteredData?.sort((a: Case, b: Case) => {
         if (sortBy === "latest") {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         } else if (sortBy === "popular") {
@@ -100,7 +100,7 @@ const CasesListBox = () => {
         return 0;
       });
 
-      setCases(filteredData);
+      setCases(filteredData || []);
       setTotalCount(count || 0);
     } catch (error) {
       console.error("사례 목록 로딩 중 오류:", error);
