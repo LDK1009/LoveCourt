@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import {
   Box,
   Card,
@@ -46,6 +46,7 @@ const categories = [
 const CasesListBox = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const searchTimer = useRef<NodeJS.Timeout | null>(null);
 
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
@@ -120,7 +121,17 @@ const CasesListBox = () => {
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
+    const newSearchTerm = event.target.value;
+    setSearchTerm(newSearchTerm);
+    
+    // 디바운스 처리를 위한 타이머 설정
+    if (searchTimer.current) {
+      clearTimeout(searchTimer.current);
+    }
+    
+    searchTimer.current = setTimeout(() => {
+      updateUrlParams({ search: newSearchTerm, page: "1" });
+    }, 500); // 500ms 디바운스
   };
 
   const handleSortChange = (event: SelectChangeEvent) => {
