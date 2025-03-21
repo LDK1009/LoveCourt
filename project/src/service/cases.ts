@@ -71,21 +71,32 @@ export async function createCase(caseData: CaseInput) {
 ////////// 케이스 ID로 조회
 export async function getCaseById(id: number) {
   const response = await supabase.from("cases").select("*").eq("id", id).single();
-  
+
   if (response.error) {
     enqueueSnackbar("케이스 조회 중 오류가 발생했습니다.", { variant: "error" });
     return response;
   }
-  
+
+  // 조회수 조회
   const viewCountResponse = await supabase.from("view_counts").select("count").eq("id", id).single();
 
-  if(viewCountResponse.data?.count){
+  // 조회수가 있으면 조회수 증가
+  if (viewCountResponse.error) {
+    return viewCountResponse;
+  } else {
     // 조회수 증가
-    await supabase
+    const updateResponse = await supabase
       .from("view_counts")
       .update({ id: id, count: viewCountResponse.data?.count + 1 })
       .eq("id", id);
+
+    
+    if (updateResponse.error) {
+      return updateResponse;
+    }
   }
+
+
 
   const returnData = { ...response.data, view_count: viewCountResponse.data?.count };
 
@@ -107,11 +118,11 @@ export async function getCases(page = 1, limit = 10, category?: string) {
   const response = await query;
 
   // 데이터 형식 변환: view_counts: {count: 0} -> view_count: 0
-  const formattedData = response.data?.map(item => {
+  const formattedData = response.data?.map((item) => {
     const { view_counts, ...rest } = item;
     return {
       ...rest,
-      view_count: view_counts?.count || 0
+      view_count: view_counts?.count || 0,
     };
   });
 
@@ -200,8 +211,6 @@ export async function bookmarkCase(caseId: number) {
     return userResponse;
   }
 
-  console.log("caseId", caseId);
-  console.log("userResponse", userResponse.data.user.id);
   // 이미 북마크했는지 확인
   const existingBookmarkResponse = await supabase
     .from("bookmarks")
@@ -209,8 +218,6 @@ export async function bookmarkCase(caseId: number) {
     .eq("case_id", caseId)
     .eq("user_id", userResponse.data.user.id)
     .single();
-
-  console.log(existingBookmarkResponse);
 
   // 이미 북마크 했다면
   if (existingBookmarkResponse.data) {
@@ -282,7 +289,6 @@ export async function getUserBookmarks() {
   } else {
     // 북마크 데이터 형식 변환
     const formattedData = response.data?.map((item) => item.cases);
-    console.log("formattedData", formattedData);
     return { data: formattedData, error: response.error };
   }
 }

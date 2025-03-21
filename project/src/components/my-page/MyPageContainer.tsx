@@ -85,7 +85,6 @@ const MyPageContainer = () => {
     // 북마크 가져오기
     const { data: bookmarksData } = await getUserBookmarks();
     if (bookmarksData) {
-      console.log("bookmarksData", bookmarksData);
       setBookmarks(bookmarksData.flat());
     }
     setLoading(false);
