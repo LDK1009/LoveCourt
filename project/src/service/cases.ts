@@ -9,7 +9,6 @@ export async function createCase(caseData: CaseInput) {
   // 로그인 여부 확인
   const response = await supabase.auth.getUser();
 
-
   // 케이스 생성
   const caseResponse = await supabase
     .from("cases")
@@ -26,6 +25,14 @@ export async function createCase(caseData: CaseInput) {
     return;
   } else {
     enqueueSnackbar("케이스 생성 성공", { variant: "success" });
+    // 조회수 초기화
+    await supabase
+      .from("view_counts")
+      .insert({
+        id: caseResponse.data[0].id,
+        count: 0,
+      })
+      .select();
   }
 
   // AI 판결 생성 요청
@@ -64,19 +71,25 @@ export async function createCase(caseData: CaseInput) {
 ////////// 케이스 ID로 조회
 export async function getCaseById(id: number) {
   const response = await supabase.from("cases").select("*").eq("id", id).single();
-
+  
   if (response.error) {
     enqueueSnackbar("케이스 조회 중 오류가 발생했습니다.", { variant: "error" });
     return response;
   }
+  
+  const viewCountResponse = await supabase.from("view_counts").select("count").eq("id", id).single();
 
-  // 조회수 증가
-  await supabase
-    .from("cases")
-    .update({ view_count: response.data.view_count + 1 })
-    .eq("id", id);
+  if(viewCountResponse.data?.count){
+    // 조회수 증가
+    await supabase
+      .from("view_counts")
+      .update({ id: id, count: viewCountResponse.data?.count + 1 })
+      .eq("id", id);
+  }
 
-  return response;
+  const returnData = { ...response.data, view_count: viewCountResponse.data?.count };
+
+  return { data: returnData, error: response.error };
 }
 
 ////////// 모든 케이스 조회 (페이지네이션)
@@ -96,13 +109,6 @@ export async function getCases(page = 1, limit = 10, category?: string) {
   if (response.error) {
     throw response.error;
   }
-
-  return response;
-}
-
-////////// 유사 케이스 검색
-export async function getSimilarCases(caseId: number) {
-  const response = await api.get(`/cases/${caseId}/similar`);
 
   return response;
 }
@@ -235,7 +241,6 @@ export async function checkBookmark(caseId: number) {
   const userResponse = await supabase.auth.getUser();
 
   if (userResponse.error) {
-    enqueueSnackbar("사용자 인증 오류 발생", { variant: "error" });
     return userResponse;
   }
 
@@ -268,7 +273,6 @@ export async function getUserBookmarks() {
   const response = await supabase.from("bookmarks").select("cases(*)").eq("user_id", userResponse.data.user?.id);
 
   if (response.error) {
-    enqueueSnackbar("북마크 가져오기 실패", { variant: "error" });
     return response;
   } else {
     // 북마크 데이터 형식 변환
