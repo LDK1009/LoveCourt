@@ -96,7 +96,7 @@ export async function getCaseById(id: number) {
 export async function getCases(page = 1, limit = 10, category?: string) {
   let query = supabase
     .from("cases")
-    .select("*", { count: "exact" })
+    .select("*, view_counts(count)", { count: "exact" })
     .order("created_at", { ascending: false })
     .range((page - 1) * limit, page * limit - 1);
 
@@ -106,11 +106,16 @@ export async function getCases(page = 1, limit = 10, category?: string) {
 
   const response = await query;
 
-  if (response.error) {
-    throw response.error;
-  }
+  // 데이터 형식 변환: view_counts: {count: 0} -> view_count: 0
+  const formattedData = response.data?.map(item => {
+    const { view_counts, ...rest } = item;
+    return {
+      ...rest,
+      view_count: view_counts?.count || 0
+    };
+  });
 
-  return response;
+  return { data: formattedData, count: response.count, error: response.error };
 }
 
 ////////// 투표하기
