@@ -46,6 +46,7 @@ const InstallPWA = () => {
     } else {
       // 설치 여부 확인 (iOS Safari 등 standalone 모드 확인)
       const isInStandaloneMode =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone === true;
       if (isInStandaloneMode) {
         localStorage.setItem("pwaInstalled", "true");
