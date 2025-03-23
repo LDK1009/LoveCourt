@@ -4,6 +4,7 @@ import { CaseInput } from "@/types/Case";
 import { VoteStats } from "@/types/Vote";
 import { closeSnackbar, enqueueSnackbar } from "notistack";
 
+
 ////////// 새로운 케이스 생성
 export async function createCase(caseData: CaseInput) {
   // 로그인 여부 확인
@@ -90,13 +91,10 @@ export async function getCaseById(id: number) {
       .update({ id: id, count: viewCountResponse.data?.count + 1 })
       .eq("id", id);
 
-    
     if (updateResponse.error) {
       return updateResponse;
     }
   }
-
-
 
   const returnData = { ...response.data, view_count: viewCountResponse.data?.count };
 

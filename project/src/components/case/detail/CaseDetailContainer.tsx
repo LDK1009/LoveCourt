@@ -107,7 +107,12 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
 
   // 투표 처리
   const handleVote = async (vote: "person_a" | "person_b" | "both" | "neither") => {
-    await voteOnCase(caseId, vote);
+    const voteResponse = await voteOnCase(caseId, vote);
+
+    if (voteResponse.error) {
+      router.push("/auth/sign-in");
+      return;
+    }
 
     // 투표 상태 업데이트
     setVoteStats((prev) => {
