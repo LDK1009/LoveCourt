@@ -4,6 +4,7 @@ import { Box, Button, Card, Container, Grid, Typography, styled } from "@mui/mat
 import { GavelRounded, SearchRounded, ThumbsUpDownRounded, ChatRounded, ShareRounded } from "@mui/icons-material";
 import { mixinFlex } from "@/styles/mixins";
 import Link from "next/link";
+import InstallPWA from "@/components/common/InstallPWA";
 
 const HomeContainer = () => {
   const features = [
@@ -103,6 +104,8 @@ const HomeContainer = () => {
           갈등 상황 입력하기
         </Button>
       </CTASection>
+
+      <InstallPWA />
     </Container>
   );
 };

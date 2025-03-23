@@ -28,6 +28,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useRouter, useSearchParams } from "next/navigation";
+import InstallPWA from "../common/InstallPWA";
 
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
@@ -271,6 +272,7 @@ const CasesListBox = () => {
           </PaginationContainer>
         )}
       </Container>
+      <InstallPWA />
     </Suspense>
   );
 };
