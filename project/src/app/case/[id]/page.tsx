@@ -40,6 +40,14 @@ export async function generateMetadata({ params }: { params: PropsType }): Promi
         title: `${caseData.title} | 연애재판`,
         description: caseData.description.substring(0, 160),
         url: `/case/${id}`,
+        images: [
+          {
+            url: `${process.env.NEXT_PUBLIC_API_BASE_URL}/img/og.png`,
+            width: 1200,
+            height: 630,
+            alt: "LoveCourt-logo",
+          },
+        ],
       },
     };
   }
