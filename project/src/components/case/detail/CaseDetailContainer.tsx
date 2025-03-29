@@ -15,6 +15,7 @@ import {
   styled,
   Avatar,
   useTheme,
+  Grid2,
 } from "@mui/material";
 import { mixinFlex } from "@/styles/mixins";
 import {
@@ -194,21 +195,25 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
         </Typography>
 
         <CaseMeta>
-          <MetaItem>
+          {/* 작성일 */}
+          <TimeWrapper>
             <AccessTimeOutlined fontSize="small" />
             <Typography variant="body2">{dayjs(caseData.created_at).format("YYYY년 MM월 DD일")}</Typography>
-          </MetaItem>
-          <MetaItem>
+          </TimeWrapper>
+
+          {/* 조회수 */}
+          <ViewWrapper>
             <VisibilityOutlined fontSize="small" />
             <Typography variant="body2">조회 {caseData.view_count}</Typography>
-          </MetaItem>
+          </ViewWrapper>
         </CaseMeta>
 
-        <Box sx={{ mt: 1 }}>
+        {/* 태그 */}
+        <TagWrapper>
           {caseData.tags.map((tag, index) => (
             <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
           ))}
-        </Box>
+        </TagWrapper>
       </CaseHeader>
 
       {/* 사례 내용 */}
@@ -281,18 +286,22 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
 
         {verdict ? (
           <VerdictResult>
-            <Typography variant="h6" gutterBottom color="primary">
-              {verdict.verdict === "person_a" && `${caseData.person_b} 유죄`}
-              {verdict.verdict === "person_b" && `${caseData.person_a}의 입장이 더 타당합니다.`}
-              {verdict.verdict === "both" && `${caseData.person_a}  유죄 | ${caseData.person_b} 유죄`}
-              {verdict.verdict === "neither" && `${caseData.person_a} 무죄 | ${caseData.person_b} 무죄`}
-            </Typography>
+            <Grid2 container spacing={1} alignItems="center">
+              <GavelRounded color="primary" />
+              <Typography variant="h5" gutterBottom color="primary" fontWeight="bold">
+                {verdict.verdict === "person_a" && `${caseData.person_b} 유죄`}
+                {verdict.verdict === "person_b" && `${caseData.person_a}의 입장이 더 타당합니다.`}
+                {verdict.verdict === "both" && `${caseData.person_a}  유죄 | ${caseData.person_b} 유죄`}
+                {verdict.verdict === "neither" && `${caseData.person_a} 무죄 | ${caseData.person_b} 무죄`}
+              </Typography>
+            </Grid2>
 
             <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mt: 2 }}>
               판결 근거
             </Typography>
             <VerdictText variant="body1" paragraph>
-              {verdict.reasoning?.replace(/\\n/g, "\n")}
+              {/* {verdict.reasoning?.replace(/\\n/g, "\n")} */}
+              {verdict.reasoning}
             </VerdictText>
 
             <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
@@ -470,18 +479,27 @@ const CaseHeader = styled(Box)`
 const CaseMeta = styled(Box)`
   ${mixinFlex("row")};
   gap: 16px;
-  margin-bottom: 8px;
 `;
 
-const MetaItem = styled(Box)`
+const TimeWrapper = styled(Box)`
   ${mixinFlex("row")};
   gap: 4px;
   align-items: center;
+  justify-content: start;
   color: ${({ theme }) => theme.palette.text.secondary};
+`;
+
+const ViewWrapper = styled(TimeWrapper)`
+  justify-content: end;
+`;
+
+const TagWrapper = styled(Box)`
+  margin-top: 12px;
 `;
 
 const CaseContent = styled(Box)`
   margin-bottom: 24px;
+  white-space: pre-line;
 `;
 
 const ParticipantsCard = styled(Card)`
