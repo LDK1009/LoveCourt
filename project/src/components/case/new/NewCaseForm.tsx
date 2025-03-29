@@ -1,7 +1,23 @@
 "use client"; // 클라이언트 컴포넌트 선언
 
 import { useState } from "react";
-import { Box, Button, Container, Paper, Step, StepLabel, Stepper, Typography, styled } from "@mui/material"; // Material UI 컴포넌트 임포트
+import {
+  Box,
+  Button,
+  Container,
+  Paper,
+  Step,
+  StepLabel,
+  Stepper,
+  Typography,
+  styled,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material"; // Material UI 컴포넌트 임포트
 import { useRouter } from "next/navigation"; // Next.js 라우터 훅
 import { enqueueSnackbar } from "notistack"; // 알림 표시 라이브러리
 import { createCase } from "@/service/cases"; // 케이스 생성 API 함수
@@ -9,9 +25,35 @@ import { createCase } from "@/service/cases"; // 케이스 생성 API 함수
 import ConflictDescriptionStep from "./steps/ConflictDescriptionStep"; // 단계별 컴포넌트 임포트
 import AdditionalInfoStep from "./steps/AdditionalInfoStep";
 import ReviewSubmitStep from "./steps/ReviewSubmitStep";
+import WhatshotIcon from "@mui/icons-material/Whatshot";
+import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
+import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
+import GavelIcon from "@mui/icons-material/Gavel";
+import ElderlyWomanIcon from "@mui/icons-material/ElderlyWoman";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import SchoolIcon from "@mui/icons-material/School";
+import ChildCareIcon from "@mui/icons-material/ChildCare";
 
 // 단계 제목 배열
-const steps = ["갈등 상황 설명", "추가 정보 입력", "검토 및 제출"];
+const steps = ["갈등 상황", "추가 정보", "판결 설정", "제출"];
+
+// 강도 옵션
+const intensityOptions = [
+  { value: "low", label: "순한맛", icon: <EmojiFoodBeverageIcon /> },
+  { value: "medium", label: "중간맛", icon: <LocalFireDepartmentIcon /> },
+  { value: "high", label: "매운맛", icon: <WhatshotIcon /> },
+];
+
+// 캐릭터 옵션
+const characterOptions = [
+  { value: "judge", label: "판사", icon: <GavelIcon /> },
+  { value: "grandma", label: "할머니", icon: <ElderlyWomanIcon /> },
+  { value: "governor", label: "사또", icon: <AccountBalanceIcon /> },
+  { value: "rapper", label: "래퍼", icon: <MusicNoteIcon /> },
+  { value: "teacher", label: "선생님", icon: <SchoolIcon /> },
+  { value: "kid", label: "잼민이", icon: <ChildCareIcon /> },
+];
 
 const NewCaseForm = () => {
   // 라우터
@@ -28,6 +70,8 @@ const NewCaseForm = () => {
     duration: "", // 관계 지속 기간
     category: "", // 카테고리
     tags: [] as string[], // 태그 배열
+    intensity: "medium", // 답변 강도 (기본값: 중간맛)
+    character: "judge", // 캐릭터 (기본값: 판사)
   });
   // 현재 입력 중인 태그
   const [currentTag, setCurrentTag] = useState("");
@@ -57,7 +101,9 @@ const NewCaseForm = () => {
   };
 
   // 입력 필드 변경 처리 함수
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { name: string; value: string } }
+  ) => {
     const { name, value } = e.target;
     setCaseData({
       ...caseData,
@@ -100,6 +146,37 @@ const NewCaseForm = () => {
     }
   };
 
+  // 강도 및 캐릭터 선택 UI 컴포넌트
+  const IntensityCharacterSelectionStep = () => (
+    <Box>
+      <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mt: 3 }}>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>답변 강도</InputLabel>
+          <Select name="intensity" value={caseData.intensity} label="답변 강도" onChange={handleChange}>
+            {intensityOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                <ListItemIcon>{option.icon}</ListItemIcon>
+                <ListItemText primary={option.label} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>캐릭터</InputLabel>
+          <Select name="character" value={caseData.character} label="캐릭터" onChange={handleChange}>
+            {characterOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                <ListItemIcon>{option.icon}</ListItemIcon>
+                <ListItemText primary={option.label} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+    </Box>
+  );
+
   return (
     <Container maxWidth="md">
       <FormPaper>
@@ -107,14 +184,20 @@ const NewCaseForm = () => {
           갈등 상황 입력
         </Typography>
 
-        {/* 단계 표시기 */}
-        <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
+        {/* 단계 표시기 - 상하 배치 스타일 */}
+        <Box sx={{ mb: 4 }}>
+          <Stepper activeStep={activeStep} alternativeLabel>
+            {steps.map((label, index) => (
+              <Step key={label}>
+                <StepLabel>
+                  <Typography variant="caption" align="center" fontWeight={activeStep === index ? "bold" : "normal"}>
+                    {label}
+                  </Typography>
+                </StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        </Box>
 
         {/* 첫 번째 단계: 갈등 상황 설명 */}
         {activeStep === 0 && <ConflictDescriptionStep caseData={caseData} handleChange={handleChange} />}
@@ -131,15 +214,30 @@ const NewCaseForm = () => {
           />
         )}
 
-        {/* 세 번째 단계: 검토 및 제출 */}
-        {activeStep === 2 && <ReviewSubmitStep caseData={caseData} />}
+        {/* 세 번째 단계: 판결 설정 */}
+        {activeStep === 2 && <IntensityCharacterSelectionStep />}
+
+        {/* 네 번째 단계: 검토 및 제출 */}
+        {activeStep === 3 && (
+          <ReviewSubmitStep
+            caseData={{
+              ...caseData,
+              intensity: caseData.intensity as "low" | "medium" | "high",
+              character: caseData.character as "judge" | "grandma" | "governor" | "rapper" | "teacher" | "kid",
+            }}
+          />
+        )}
 
         {/* 이전/다음/제출 버튼 */}
         <ButtonContainer>
-          {activeStep > 0 && <Button onClick={handleBack}>이전</Button>}
+          {activeStep > 0 ? (
+            <Button onClick={handleBack}>이전</Button>
+          ) : (
+            <Button onClick={handleBack} disabled></Button>
+          )}
 
           {activeStep < steps.length - 1 ? (
-            <Button variant="contained" onClick={handleNext}>
+            <Button variant="contained" onClick={handleNext} sx={{ justifySelf: "end" }}>
               다음
             </Button>
           ) : (

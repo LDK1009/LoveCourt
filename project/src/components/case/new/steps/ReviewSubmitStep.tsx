@@ -1,17 +1,25 @@
-import { Box, Typography, Chip, styled } from "@mui/material";
+"use client";
 
-const FormSection = styled(Box)`
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 16px;
-`;
+import { Box, Chip, Divider, Typography } from "@mui/material";
 
-const ReviewItem = styled(Box)`
-  margin-bottom: 16px;
-`;
+// 강도 레이블 매핑
+const intensityLabels = {
+  low: "순한맛",
+  medium: "중간맛",
+  high: "매운맛",
+};
 
-interface ReviewSubmitStepProps {
+// 캐릭터 레이블 매핑
+const characterLabels = {
+  judge: "판사",
+  grandma: "할머니",
+  governor: "사또",
+  rapper: "래퍼",
+  teacher: "선생님",
+  kid: "잼민이",
+};
+
+type ReviewSubmitStepProps = {
   caseData: {
     title: string;
     description: string;
@@ -21,59 +29,80 @@ interface ReviewSubmitStepProps {
     duration: string;
     category: string;
     tags: string[];
+    intensity: "low" | "medium" | "high";
+    character: "judge" | "grandma" | "governor" | "rapper" | "teacher" | "kid";
   };
-}
+};
 
 const ReviewSubmitStep = ({ caseData }: ReviewSubmitStepProps) => {
   return (
-    <FormSection>
+    <Box>
       <Typography variant="h6" gutterBottom>
-        입력 정보 확인
+        입력 내용 확인
       </Typography>
-      
-      <ReviewItem>
-        <Typography variant="subtitle1" fontWeight="bold">제목:</Typography>
-        <Typography variant="body1">{caseData.title}</Typography>
-      </ReviewItem>
-      
-      <ReviewItem>
-        <Typography variant="subtitle1" fontWeight="bold">갈등 상황:</Typography>
-        <Typography variant="body1">{caseData.description}</Typography>
-      </ReviewItem>
-      
-      <ReviewItem>
-        <Typography variant="subtitle1" fontWeight="bold">당사자:</Typography>
-        <Typography variant="body1">{caseData.person_a} vs {caseData.person_b}</Typography>
-      </ReviewItem>
-      
-      <ReviewItem>
-        <Typography variant="subtitle1" fontWeight="bold">연애 관계:</Typography>
-        <Typography variant="body1">{caseData.relationship} ({caseData.duration})</Typography>
-      </ReviewItem>
-      
-      {caseData.category && (
-        <ReviewItem>
-          <Typography variant="subtitle1" fontWeight="bold">카테고리:</Typography>
-          <Typography variant="body1">{caseData.category}</Typography>
-        </ReviewItem>
-      )}
-      
-      {caseData.tags.length > 0 && (
-        <ReviewItem>
-          <Typography variant="subtitle1" fontWeight="bold">태그:</Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {caseData.tags.map((tag) => (
-              <Chip key={tag} label={tag} size="small" />
-            ))}
-          </Box>
-        </ReviewItem>
-      )}
-      
-      <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
-        제출 후에는 AI가 갈등 상황을 분석하여 객관적인 판단을 제공합니다.
+      <Typography variant="body2" color="text.secondary" paragraph>
+        입력하신 내용을 확인하고 제출해주세요.
       </Typography>
-    </FormSection>
+
+      <Box sx={{ mt: 3 }}>
+        <Typography variant="subtitle1" fontWeight="bold">
+          제목
+        </Typography>
+        <Typography variant="body1" paragraph>
+          {caseData.title}
+        </Typography>
+
+        <Typography variant="subtitle1" fontWeight="bold">
+          갈등 상황 설명
+        </Typography>
+        <Typography variant="body1" paragraph sx={{ whiteSpace: "pre-wrap" }}>
+          {caseData.description}
+        </Typography>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Typography variant="subtitle1" fontWeight="bold">
+          당사자 정보
+        </Typography>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mb: 2 }}>
+          <Typography variant="body1">원고(고소인) : {caseData.person_a}</Typography>
+          <Typography variant="body1">피고(피고소인) : {caseData.person_b}</Typography>
+          <Typography variant="body1">관계 : {caseData.relationship}</Typography>
+          <Typography variant="body1">관계 기간 : {caseData.duration}</Typography>
+        </Box>
+
+        <Typography variant="subtitle1" fontWeight="bold">
+          카테고리
+        </Typography>
+        <Typography variant="body1" paragraph>
+          {caseData.category}
+        </Typography>
+
+        <Typography variant="subtitle1" fontWeight="bold">
+          태그
+        </Typography>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+          {caseData.tags.length > 0 ? (
+            caseData.tags.map((tag) => <Chip key={tag} label={tag} />)
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              태그가 없습니다.
+            </Typography>
+          )}
+        </Box>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Typography variant="subtitle1" fontWeight="bold">
+          판결 설정
+        </Typography>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mb: 2 }}>
+          <Typography variant="body1">답변 강도 : {intensityLabels[caseData.intensity]}</Typography>
+          <Typography variant="body1">캐릭터 : {characterLabels[caseData.character]}</Typography>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
-export default ReviewSubmitStep; 
+export default ReviewSubmitStep;
