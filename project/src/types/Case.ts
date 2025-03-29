@@ -23,4 +23,6 @@ export interface CaseInput {
   duration: string;
   category: string;
   tags: string[];
+  intensity: string;
+  character: string;
 } 

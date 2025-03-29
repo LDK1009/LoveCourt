@@ -133,6 +133,7 @@ const NewCaseForm = () => {
   // 케이스 제출 함수
   const handleSubmit = async () => {
     setIsSubmitDisabled(true);
+
     // API 호출하여 케이스 생성
     const response = await createCase(caseData);
 

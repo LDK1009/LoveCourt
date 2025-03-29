@@ -10,11 +10,13 @@ export async function createCase(caseData: CaseInput) {
   // 로그인 여부 확인
   const response = await supabase.auth.getUser();
 
+  const { intensity, character, ...restCaseData } = caseData;
+
   // 케이스 생성
   const caseResponse = await supabase
     .from("cases")
     .insert({
-      ...caseData,
+      ...restCaseData,
       user_id: response.data.user?.id,
       status: "pending",
       view_count: 0,
@@ -44,7 +46,11 @@ export async function createCase(caseData: CaseInput) {
   });
 
   // AI 판결 생성 요청
-  const { data: verdictsResponse } = await api.post("/verdicts/generate", { case_id: caseResponse.data[0].id });
+  const { data: verdictsResponse } = await api.post("/verdicts/generate", {
+    case_id: caseResponse.data[0].id,
+    intensity: intensity,
+    character: character,
+  });
 
   if (verdictsResponse.error) {
     enqueueSnackbar("AI 판결 생성 요청 실패", { variant: "error" });
