@@ -14,8 +14,11 @@ import ReviewSubmitStep from "./steps/ReviewSubmitStep";
 const steps = ["갈등 상황 설명", "추가 정보 입력", "검토 및 제출"];
 
 const NewCaseForm = () => {
-  const router = useRouter(); // 라우터 인스턴스
-  const [activeStep, setActiveStep] = useState(0); // 현재 활성화된 단계
+  // 라우터
+  const router = useRouter();
+  // 활성화된 단계
+  const [activeStep, setActiveStep] = useState(0);
+  // 케이스 데이터
   const [caseData, setCaseData] = useState({
     title: "", // 제목
     description: "", // 설명
@@ -26,7 +29,10 @@ const NewCaseForm = () => {
     category: "", // 카테고리
     tags: [] as string[], // 태그 배열
   });
-  const [currentTag, setCurrentTag] = useState(""); // 현재 입력 중인 태그
+  // 현재 입력 중인 태그
+  const [currentTag, setCurrentTag] = useState("");
+  // 제출 버튼 비활성화 여부
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
 
   // 다음 단계로 이동하는 함수
   const handleNext = () => {
@@ -80,9 +86,18 @@ const NewCaseForm = () => {
 
   // 케이스 제출 함수
   const handleSubmit = async () => {
+    setIsSubmitDisabled(true);
     // API 호출하여 케이스 생성
     const response = await createCase(caseData);
-    router.push(`/case/${response?.data?.id}`); // 생성된 케이스 페이지로 이동
+
+    // 케이스 생성 성공 시
+    if (response?.data) {
+      router.push(`/case/${response?.data?.id}`); // 생성된 케이스 페이지로 이동
+    }
+    // 케이스 생성 실패 시
+    else {
+      setIsSubmitDisabled(false);
+    }
   };
 
   return (
@@ -128,7 +143,7 @@ const NewCaseForm = () => {
               다음
             </Button>
           ) : (
-            <Button variant="contained" onClick={handleSubmit}>
+            <Button variant="contained" onClick={handleSubmit} disabled={isSubmitDisabled}>
               제출하기
             </Button>
           )}
