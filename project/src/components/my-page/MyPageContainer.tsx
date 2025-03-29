@@ -191,12 +191,7 @@ const MyPageContainer = () => {
                             <Typography variant="body2" component="span" color="textSecondary">
                               {dayjs(caseItem.created_at).format("YYYY년 MM월 DD일")}
                             </Typography>
-                            <StatusChip
-                              label={caseItem.status === "completed" ? "판결 완료" : "판결 중"}
-                              size="small"
-                              color={caseItem.status === "completed" ? "success" : "warning"}
-                              sx={{ ml: 1 }}
-                            />
+                            <StatusChip label="판결 완료" size="small" color="secondary" sx={{ ml: 1 }} />
                           </>
                         }
                       />

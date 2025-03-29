@@ -124,12 +124,12 @@ const CasesListBox = () => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newSearchTerm = event.target.value;
     setSearchTerm(newSearchTerm);
-    
+
     // 디바운스 처리를 위한 타이머 설정
     if (searchTimer.current) {
       clearTimeout(searchTimer.current);
     }
-    
+
     searchTimer.current = setTimeout(() => {
       updateUrlParams({ search: newSearchTerm, page: "1" });
     }, 500); // 500ms 디바운스
@@ -253,11 +253,7 @@ const CasesListBox = () => {
                     </CaseTags>
 
                     <CaseStatus>
-                      <StatusChip
-                        label={caseItem.status === "completed" ? "판결 완료" : "판결 중"}
-                        size="small"
-                        color={caseItem.status === "completed" ? "success" : "warning"}
-                      />
+                      <StatusChip label="판결 완료" size="small" color="secondary" />
                     </CaseStatus>
                   </CardContent>
                 </CardActionArea>
