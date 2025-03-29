@@ -291,21 +291,21 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
             <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mt: 2 }}>
               판결 근거
             </Typography>
-            <Typography variant="body1" paragraph>
-              {verdict.reasoning}
-            </Typography>
+            <VerdictText variant="body1" paragraph>
+              {verdict.reasoning?.replace(/\\n/g, "\n")}
+            </VerdictText>
 
             <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
               법률적 근거
             </Typography>
-            <Typography variant="body1" paragraph>
-              {verdict.legal_basis}
-            </Typography>
+            <VerdictText variant="body1" paragraph>
+              {verdict.legal_basis?.replace(/\\n/g, "\n")}
+            </VerdictText>
 
             <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
               AI 코멘트
             </Typography>
-            <Typography variant="body1">{verdict.ai_comment}</Typography>
+            <VerdictText variant="body1">{verdict.ai_comment?.replace(/\\n/g, "\n")}</VerdictText>
           </VerdictResult>
         ) : (
           <PendingVerdict>
@@ -517,6 +517,10 @@ const VerdictHeader = styled(Box)`
 const VerdictResult = styled(Paper)`
   padding: 24px;
   background-color: ${({ theme }) => theme.palette.background.default};
+`;
+
+const VerdictText = styled(Typography)`
+  white-space: pre-line;
 `;
 
 const PendingVerdict = styled(Paper)`
