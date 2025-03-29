@@ -282,10 +282,10 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
         {verdict ? (
           <VerdictResult>
             <Typography variant="h6" gutterBottom color="primary">
-              {verdict.verdict === "person_a" && `${caseData.person_a}의 입장이 더 타당합니다.`}
-              {verdict.verdict === "person_b" && `${caseData.person_b}의 입장이 더 타당합니다.`}
-              {verdict.verdict === "both" && "양쪽 모두 일리가 있습니다."}
-              {verdict.verdict === "neither" && "양쪽 모두 재고해볼 필요가 있습니다."}
+              {verdict.verdict === "person_a" && `${caseData.person_b} 유죄`}
+              {verdict.verdict === "person_b" && `${caseData.person_a}의 입장이 더 타당합니다.`}
+              {verdict.verdict === "both" && `${caseData.person_a}  유죄 | ${caseData.person_b} 유죄`}
+              {verdict.verdict === "neither" && `${caseData.person_a} 무죄 | ${caseData.person_b} 무죄`}
             </Typography>
 
             <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mt: 2 }}>
