@@ -1,23 +1,7 @@
 "use client"; // 클라이언트 컴포넌트 선언
 
 import { useState } from "react";
-import {
-  Box,
-  Button,
-  Container,
-  Paper,
-  Step,
-  StepLabel,
-  Stepper,
-  Typography,
-  styled,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material"; // Material UI 컴포넌트 임포트
+import { Box, Button, Container, Paper, Step, StepLabel, Stepper, Typography, styled } from "@mui/material"; // Material UI 컴포넌트 임포트
 import { useRouter } from "next/navigation"; // Next.js 라우터 훅
 import { enqueueSnackbar } from "notistack"; // 알림 표시 라이브러리
 import { createCase } from "@/service/cases"; // 케이스 생성 API 함수
@@ -25,35 +9,10 @@ import { createCase } from "@/service/cases"; // 케이스 생성 API 함수
 import ConflictDescriptionStep from "./steps/ConflictDescriptionStep"; // 단계별 컴포넌트 임포트
 import AdditionalInfoStep from "./steps/AdditionalInfoStep";
 import ReviewSubmitStep from "./steps/ReviewSubmitStep";
-import WhatshotIcon from "@mui/icons-material/Whatshot";
-import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
-import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
-import GavelIcon from "@mui/icons-material/Gavel";
-import ElderlyWomanIcon from "@mui/icons-material/ElderlyWoman";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import SchoolIcon from "@mui/icons-material/School";
-import ChildCareIcon from "@mui/icons-material/ChildCare";
+import IntensityCharacterSelectionStep from "./steps/IntensityCharacterSelectionStep";
 
 // 단계 제목 배열
 const steps = ["갈등 상황", "추가 정보", "판결 설정", "제출"];
-
-// 강도 옵션
-const intensityOptions = [
-  { value: "low", label: "순한맛", icon: <EmojiFoodBeverageIcon /> },
-  { value: "medium", label: "중간맛", icon: <LocalFireDepartmentIcon /> },
-  { value: "high", label: "매운맛", icon: <WhatshotIcon /> },
-];
-
-// 캐릭터 옵션
-const characterOptions = [
-  { value: "judge", label: "판사", icon: <GavelIcon /> },
-  { value: "grandma", label: "할머니", icon: <ElderlyWomanIcon /> },
-  { value: "governor", label: "사또", icon: <AccountBalanceIcon /> },
-  { value: "rapper", label: "래퍼", icon: <MusicNoteIcon /> },
-  { value: "teacher", label: "선생님", icon: <SchoolIcon /> },
-  { value: "kid", label: "잼민이", icon: <ChildCareIcon /> },
-];
 
 const NewCaseForm = () => {
   // 라우터
@@ -147,37 +106,6 @@ const NewCaseForm = () => {
     }
   };
 
-  // 강도 및 캐릭터 선택 UI 컴포넌트
-  const IntensityCharacterSelectionStep = () => (
-    <Box>
-      <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mt: 3 }}>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>답변 강도</InputLabel>
-          <Select name="intensity" value={caseData.intensity} label="답변 강도" onChange={handleChange}>
-            {intensityOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                <ListItemIcon>{option.icon}</ListItemIcon>
-                <ListItemText primary={option.label} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>캐릭터</InputLabel>
-          <Select name="character" value={caseData.character} label="캐릭터" onChange={handleChange}>
-            {characterOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                <ListItemIcon>{option.icon}</ListItemIcon>
-                <ListItemText primary={option.label} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
-    </Box>
-  );
-
   return (
     <Container maxWidth="md">
       <FormPaper>
@@ -191,7 +119,7 @@ const NewCaseForm = () => {
             {steps.map((label, index) => (
               <Step key={label}>
                 <StepLabel>
-                  <Typography variant="caption" align="center" fontWeight={activeStep === index ? "bold" : "normal"}>
+                  <Typography variant="body1" align="center" fontWeight={activeStep === index ? "bold" : "normal"}>
                     {label}
                   </Typography>
                 </StepLabel>
@@ -216,7 +144,7 @@ const NewCaseForm = () => {
         )}
 
         {/* 세 번째 단계: 판결 설정 */}
-        {activeStep === 2 && <IntensityCharacterSelectionStep />}
+        {activeStep === 2 && <IntensityCharacterSelectionStep caseData={caseData} handleChange={handleChange} />}
 
         {/* 네 번째 단계: 검토 및 제출 */}
         {activeStep === 3 && (
