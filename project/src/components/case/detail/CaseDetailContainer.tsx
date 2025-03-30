@@ -37,6 +37,7 @@ import {
   getVerdictByCaseId,
   getCaseVoteStats,
   checkBookmark,
+  getPrevNextCase,
 } from "@/service/cases";
 import { useAuthStore } from "@/store";
 import { enqueueSnackbar } from "notistack";
@@ -47,6 +48,8 @@ import type { VoteStats } from "@/types/Vote";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import api from "@/lib/apiClient";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 dayjs.locale("ko");
 
@@ -55,12 +58,20 @@ interface CaseDetailContainerProps {
 }
 
 const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
+  //////////////////////////////////////// Hooks ////////////////////////////////////////
+  // 테마
   const theme = useTheme();
+  // 라우터
   const router = useRouter();
+  // 유저 정보
   const { user } = useAuthStore();
 
+  //////////////////////////////////////// State ////////////////////////////////////////
+  // 사례 데이터
   const [caseData, setCaseData] = useState<Case | null>(null);
+  // 판결 데이터
   const [verdict, setVerdict] = useState<Verdict | null>(null);
+  // 투표 데이터
   const [voteStats, setVoteStats] = useState<VoteStats>({
     person_a: 0,
     person_b: 0,
@@ -68,10 +79,18 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
     neither: 0,
     total: 0,
   });
+  // 이전 케이스 데이터
+  const [prevCase, setPrevCase] = useState<Case | null>();
+  // 다음 케이스 데이터
+  const [nextCase, setNextCase] = useState<Case | null>();
+  // 유저 투표
   const [userVote, setUserVote] = useState<string | null>(null);
+  // 북마크 상태
   const [isBookmarked, setIsBookmarked] = useState(false);
+  // 로딩 상태
   const [loading, setLoading] = useState(true);
 
+  //////////////////////////////////////// UseEffect ////////////////////////////////////////
   // 데이터 불러오기
   useEffect(() => {
     setLoading(true);
@@ -96,16 +115,30 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
         setVoteStats(voteStatsData);
       }
 
-      // 북마크 확인
-      const { data: bookmarkData } = await checkBookmark(caseId);
-      if (bookmarkData) {
-        setIsBookmarked(bookmarkData);
+      // 이전/다음 케이스 데이터 불러오기
+      const { data, error } = await getPrevNextCase(caseId);
+      if (error) {
+        enqueueSnackbar("이전/다음 케이스 데이터 불러오기 실패", { variant: "error" });
+        return;
+      }
+      if (data) {
+        setPrevCase(data.prev);
+        setNextCase(data.next);
+      }
+
+      // 북마크 확인 - 로그인된 경우에만 확인
+      if (user.isSignIn) {
+        const { data: bookmarkData } = await checkBookmark(caseId);
+        setIsBookmarked(!!bookmarkData); // 북마크 데이터가 있으면 true, 없으면 false
+      } else {
+        setIsBookmarked(false); // 로그인되지 않은 경우 항상 false
       }
     };
 
     fetchCaseData();
   }, [caseId, user.isSignIn, user.uid]);
 
+  //////////////////////////////////////// Functions ////////////////////////////////////////
   // 투표 처리
   const handleVote = async (vote: "person_a" | "person_b" | "both" | "neither") => {
     const voteResponse = await voteOnCase(caseId, vote);
@@ -135,11 +168,13 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
     setUserVote(vote);
   };
 
+  // 북마크 처리
   const handleBookmark = async () => {
     await bookmarkCase(caseId);
     setIsBookmarked(!isBookmarked);
   };
 
+  // 공유 처리
   const handleShare = async () => {
     if (navigator.share) {
       await navigator.share({
@@ -153,6 +188,7 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
     }
   };
 
+  // 판결 생성 요청
   const handleGenerateVerdict = async () => {
     setLoading(true);
     await api.post("/verdicts/generate", { case_id: caseId });
@@ -160,6 +196,7 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
     enqueueSnackbar("AI가 판결을 생성 중입니다. 잠시 후 새로고침해 주세요.", { variant: "info" });
   };
 
+  // 로딩 상태
   if (loading) {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>
@@ -171,6 +208,7 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
     );
   }
 
+  // 사례 정보 없음
   if (!caseData) {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>
@@ -290,8 +328,8 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
               <GavelRounded color="primary" />
               <Typography variant="h5" gutterBottom color="primary" fontWeight="bold">
                 {verdict.verdict === "person_a" && `${caseData.person_b} 유죄`}
-                {verdict.verdict === "person_b" && `${caseData.person_a}의 입장이 더 타당합니다.`}
-                {verdict.verdict === "both" && `${caseData.person_a}  유죄 | ${caseData.person_b} 유죄`}
+                {verdict.verdict === "person_b" && `${caseData.person_a} 유죄`}
+                {verdict.verdict === "both" && `${caseData.person_a} 유죄 | ${caseData.person_b} 유죄`}
                 {verdict.verdict === "neither" && `${caseData.person_a} 무죄 | ${caseData.person_b} 무죄`}
               </Typography>
             </Grid2>
@@ -460,12 +498,35 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
           startIcon={isBookmarked ? <BookmarkOutlined /> : <BookmarkBorderOutlined />}
           onClick={handleBookmark}
         >
-          {isBookmarked ? "북마크됨" : "북마크"}
+          {user.isSignIn ? (isBookmarked ? "북마크됨" : "북마크") : "북마크"}
         </ActionButton>
         <ActionButton variant="outlined" startIcon={<ShareOutlined />} onClick={handleShare}>
           공유하기
         </ActionButton>
       </ActionButtons>
+
+      {/* 이전/다음 게시물 네비게이션 */}
+      <NavigationContainer>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => prevCase && router.push(`/case/${prevCase.id}`)}
+          disabled={!prevCase}
+          sx={{ flex: 1, justifyContent: "flex-start" }}
+        >
+          {prevCase ? `${prevCase.title}` : "이전 게시물 없음"}
+        </Button>
+
+        <Button
+          variant="outlined"
+          endIcon={<ArrowForwardIcon />}
+          onClick={() => nextCase && router.push(`/case/${nextCase.id}`)}
+          disabled={!nextCase}
+          sx={{ flex: 1, justifyContent: "flex-end" }}
+        >
+          {nextCase ? `${nextCase.title}` : "다음 게시물 없음"}
+        </Button>
+      </NavigationContainer>
     </Container>
   );
 };
@@ -607,3 +668,15 @@ const ActionButtons = styled(Box)`
 const ActionButton = styled(Button)`
   min-width: 120px;
 `;
+
+// 이전/다음 게시물 네비게이션 컨테이너 스타일
+const NavigationContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  gap: theme.spacing(2),
+  marginTop: theme.spacing(4),
+  marginBottom: theme.spacing(4),
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+  },
+}));

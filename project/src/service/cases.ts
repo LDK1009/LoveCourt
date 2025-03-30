@@ -4,7 +4,6 @@ import { CaseInput } from "@/types/Case";
 import { VoteStats } from "@/types/Vote";
 import { closeSnackbar, enqueueSnackbar } from "notistack";
 
-
 ////////// 새로운 케이스 생성
 export async function createCase(caseData: CaseInput) {
   // 로그인 여부 확인
@@ -131,6 +130,33 @@ export async function getCases(page = 1, limit = 10, category?: string) {
   });
 
   return { data: formattedData, count: response.count, error: response.error };
+}
+
+////////// 다음/이전 케이스 조회
+export async function getPrevNextCase(caseId: number) {
+  // 이전 케이스: 현재 ID보다 작은 ID 중에서 가장 큰 ID를 가진 케이스
+  const prevCase = await supabase
+    .from("cases")
+    .select("*")
+    .lt("id", caseId) // id < 현재 id
+    .order("id", { ascending: false }) // id 내림차순 정렬
+    .limit(1); // 첫 번째 결과만 가져옴
+
+  // 다음 케이스: 현재 ID보다 큰 ID 중에서 가장 작은 ID를 가진 케이스
+  const nextCase = await supabase
+    .from("cases")
+    .select("*")
+    .gt("id", caseId) // id > 현재 id
+    .order("id", { ascending: true }) // id 오름차순 정렬
+    .limit(1); // 첫 번째 결과만 가져옴
+
+  // 응답 데이터
+  const responseData = {
+    prev: prevCase.data?.[0],
+    next: nextCase.data?.[0],
+  };
+
+  return { data: responseData, error: prevCase.error || nextCase.error };
 }
 
 ////////// 투표하기
