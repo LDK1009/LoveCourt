@@ -27,6 +27,10 @@ export async function generateMetadata({ params }: { params: PropsType }): Promi
     return {
       title: "잘못된 사례 ID | 연애재판",
       description: "AI 기반 연애 논쟁 판결 서비스",
+      robots: {
+        index: true,
+        follow: true,
+      },
     };
   }
 
@@ -36,6 +40,10 @@ export async function generateMetadata({ params }: { params: PropsType }): Promi
     return {
       title: `${caseData.title} | 연애재판`,
       description: caseData.description.substring(0, 160),
+      robots: {
+        index: true,
+        follow: true,
+      },
       openGraph: {
         title: `${caseData.title} | 연애재판`,
         description: caseData.description.substring(0, 160),
@@ -55,6 +63,10 @@ export async function generateMetadata({ params }: { params: PropsType }): Promi
   return {
     title: "사례 상세 | 연애재판",
     description: "AI 기반 연애 논쟁 판결 서비스",
+    robots: {
+      index: true,
+      follow: true,
+    },
   };
 }
 
