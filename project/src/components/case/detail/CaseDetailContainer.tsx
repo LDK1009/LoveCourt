@@ -178,8 +178,7 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
   const handleShare = async () => {
     if (navigator.share) {
       await navigator.share({
-        title: caseData?.title || "연애재판 사례",
-        text: caseData?.description || "연애재판에서 AI 판결을 확인해보세요.",
+        title: `연애재판 | ${caseData?.title}`,
         url: window.location.href,
       });
     } else {
