@@ -17,7 +17,7 @@ import CountUp from "react-countup";
 
 const HomeContainer = () => {
   // 문자 수
-  const [visitorCount] = useState(502);
+  const [visitorCount] = useState(699);
 
   const features = [
     {
