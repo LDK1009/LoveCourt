@@ -178,7 +178,7 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
   const handleShare = async () => {
     if (navigator.share) {
       await navigator.share({
-        title: `연애재판 | ${caseData?.title}`,
+        title: `연애재판 | ${caseData?.title}`.trim(),
         url: window.location.href,
       });
     } else {
