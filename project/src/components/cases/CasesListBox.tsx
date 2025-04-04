@@ -3,14 +3,9 @@
 import { Suspense, useEffect, useState, useRef } from "react";
 import {
   Box,
-  Card,
-  CardContent,
-  CardActionArea,
-  Chip,
   Container,
   FormControl,
   InputLabel,
-  LinearProgress,
   MenuItem,
   Pagination,
   Select,
@@ -18,17 +13,18 @@ import {
   Typography,
   styled,
   SelectChangeEvent,
+  CircularProgress,
 } from "@mui/material";
 import { mixinFlex } from "@/styles/mixins";
-import { AccessTimeOutlined, VisibilityOutlined, SortOutlined } from "@mui/icons-material";
+import { SortOutlined } from "@mui/icons-material";
 import { getCases } from "@/service/cases";
 import { Case } from "@/types/Case";
-import Link from "next/link";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useRouter, useSearchParams } from "next/navigation";
 import InstallPWA from "../common/InstallPWA";
+import CaseCard from "./CaseCard";
 
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
@@ -154,6 +150,24 @@ const CasesListBox = () => {
     router.push(`/cases?${newParams.toString()}`);
   };
 
+  if (loading) {
+    return (
+      <LoadingContainer>
+        <CircularProgress />
+      </LoadingContainer>
+    );
+  }
+
+  if (cases.length === 0) {
+    return (
+      <EmptyContainer>
+        <Typography variant="h6" align="center">
+          등록된 사례가 없습니다.
+        </Typography>
+      </EmptyContainer>
+    );
+  }
+
   return (
     <Suspense>
       <Container maxWidth="md" sx={{ py: 4 }}>
@@ -202,65 +216,11 @@ const CasesListBox = () => {
           </FilterControls>
         </FilterSection>
 
-        {loading ? (
-          <LinearProgress />
-        ) : cases.length === 0 ? (
-          <EmptyState>
-            <Typography variant="h6" align="center">
-              검색 결과가 없습니다.
-            </Typography>
-            <Typography variant="body2" align="center" color="textSecondary">
-              다른 검색어나 필터를 시도해보세요.
-            </Typography>
-          </EmptyState>
-        ) : (
-          <CasesList>
-            {cases.map((caseItem) => (
-              <CaseCard key={caseItem.id}>
-                <CardActionArea component={Link} href={`/case/${caseItem.id}`}>
-                  <CardContent>
-                    <CaseTitle variant="h6">{caseItem.title}</CaseTitle>
-
-                    <CaseMeta>
-                      <MetaItem>
-                        <AccessTimeOutlined fontSize="small" />
-                        <Typography variant="body2">{dayjs(caseItem.created_at).fromNow()}</Typography>
-                      </MetaItem>
-                      <MetaItem>
-                        <VisibilityOutlined fontSize="small" />
-                        <Typography variant="body2">{caseItem.view_count}</Typography>
-                      </MetaItem>
-                    </CaseMeta>
-
-                    <CaseDescription variant="body2" color="textSecondary">
-                      {caseItem.description.length > 100
-                        ? `${caseItem.description.substring(0, 100)}...`
-                        : caseItem.description}
-                    </CaseDescription>
-
-                    <CaseTags>
-                      {caseItem.category && (
-                        <Chip label={caseItem.category} size="small" color="primary" variant="outlined" />
-                      )}
-                      {caseItem.tags.slice(0, 3).map((tag, index) => (
-                        <Chip key={index} label={tag} size="small" variant="outlined" />
-                      ))}
-                      {caseItem.tags.length > 3 && (
-                        <Typography variant="caption" color="textSecondary">
-                          +{caseItem.tags.length - 3}
-                        </Typography>
-                      )}
-                    </CaseTags>
-
-                    <CaseStatus>
-                      <StatusChip label="판결 완료" size="small" color="secondary" />
-                    </CaseStatus>
-                  </CardContent>
-                </CardActionArea>
-              </CaseCard>
-            ))}
-          </CasesList>
-        )}
+        <CasesContainer>
+          {cases.map((caseItem) => (
+            <CaseCard key={caseItem.id} caseItem={caseItem} />
+          ))}
+        </CasesContainer>
 
         {totalCount > limit && (
           <PaginationContainer>
@@ -289,75 +249,22 @@ const FilterControls = styled(Box)`
   flex-wrap: wrap;
 `;
 
-const CasesList = styled(Box)`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 24px;
+const CasesContainer = styled(Box)`
+  margin-top: 16px;
 `;
 
-const CaseCard = styled(Card)`
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const CaseTitle = styled(Typography)`
-  margin-bottom: 8px;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
-const CaseMeta = styled(Box)`
+const LoadingContainer = styled(Box)`
   ${mixinFlex("row")};
-  gap: 16px;
-  margin-bottom: 8px;
+  justify-content: center;
+  padding: 48px 0;
 `;
 
-const MetaItem = styled(Box)`
-  ${mixinFlex("row")};
-  gap: 4px;
-  align-items: center;
-  color: ${({ theme }) => theme.palette.text.secondary};
-`;
-
-const CaseDescription = styled(Typography)`
-  margin-bottom: 16px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
-const CaseTags = styled(Box)`
-  ${mixinFlex("row")};
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-`;
-
-const CaseStatus = styled(Box)`
-  display: flex;
-  justify-content: flex-end;
-`;
-
-const StatusChip = styled(Chip)`
-  font-weight: 500;
+const EmptyContainer = styled(Box)`
+  padding: 48px 0;
 `;
 
 const PaginationContainer = styled(Box)`
   ${mixinFlex("row")};
   justify-content: center;
   margin-top: 32px;
-`;
-
-const EmptyState = styled(Box)`
-  ${mixinFlex("column")};
-  padding: 48px 0;
-  text-align: center;
 `;
