@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Card, Container, Grid, Typography, styled } from "@mui/material";
+import { Box, Button, Card, Container, Grid2, Stack, Typography, styled } from "@mui/material";
 import {
   GavelRounded,
   SearchRounded,
@@ -8,16 +8,19 @@ import {
   ChatRounded,
   ShareRounded,
   PeopleAltRounded,
+  ArrowForwardRounded,
 } from "@mui/icons-material";
 import { mixinFlex } from "@/styles/mixins";
 import Link from "next/link";
 import InstallPWA from "@/components/common/InstallPWA";
 import { useState } from "react";
 import CountUp from "react-countup";
+import Image from "next/image";
 
 const HomeContainer = () => {
   // 문자 수
-  const [visitorCount] = useState(699);
+  const [visitorCount] = useState(712);
+  const [selectedCharacter, setSelectedCharacter] = useState(0);
 
   const features = [
     {
@@ -47,42 +50,82 @@ const HomeContainer = () => {
     },
   ];
 
+  const aiCharacters = [
+    {
+      id: 0,
+      name: "정의로운 판사",
+      personalities: ["공정", "논리적", "객관적"],
+      feature: "법률적 원칙과 관계 심리학에 기반한 전문적 판결",
+      image: "/img/판사.png",
+      character: "judge",
+    },
+    {
+      id: 1,
+      name: "따뜻한 할머니",
+      personalities: ["정감있는", "경험많은", "엉뚱한"],
+      feature: "손자/손녀를 대하듯 따뜻하고 재미있는 조언",
+      image: "/img/할머니.png",
+      character: "grandma",
+    },
+    {
+      id: 2,
+      name: "사또",
+      personalities: ["권위있는", "엄격한", "공정한"],
+      feature: "고어체를 사용한 권위있는 판결",
+      image: "/img/사또.png",
+      character: "governor",
+    },
+    {
+      id: 3,
+      name: "래퍼",
+      personalities: ["리듬감있는", "창의적", "독특한"],
+      feature: "라임과 비트에 맞춘 스타일리시한 판결",
+      image: "/img/래퍼.png",
+      character: "rapper",
+    },
+    {
+      id: 4,
+      name: "선생님",
+      personalities: ["따뜻한", "친절한", "교육적"],
+      feature: "교육적 관점에서 구조화된 조언과 숙제 제시",
+      image: "/img/선생님.png",
+      character: "teacher",
+    },
+    {
+      id: 5,
+      name: "잼민이",
+      personalities: ["엉뚱한", "귀여운", "직설적"],
+      feature: "유치하고 엉뚱한 관점의 판결과 조언",
+      image: "/img/잼민이.png",
+      character: "kid",
+    },
+  ];
+
   return (
     <Container maxWidth="md">
       {/* 히어로 섹션 */}
       <HeroSection>
-        <Typography variant="h3" component="h1" gutterBottom align="center" fontWeight="bold">
-          연애 갈등, 이제는 <HighlightText>AI 판사</HighlightText>에게 맡기세요
-        </Typography>
-        <Typography variant="h6" component="h2" gutterBottom align="center" color="textSecondary">
-          법률 기반의 객관적인 판단으로 커플 간 논쟁을 해결합니다
+        <Typography variant="h3" component="h1" gutterBottom align="center" fontWeight="bold" color="textPrimary">
+          연애 갈등, <HighlightText>AI 판사</HighlightText>에게 맡기세요!
         </Typography>
 
         {/* 방문자 수 카운터 추가 */}
         <VisitorStatsSection>
-          <Typography variant="subtitle1" component="p" align="center" color="textSecondary">
-            지금까지
+          <Typography variant="subtitle1" component="p" align="center" color="primary">
+            함께한 사용자
           </Typography>
           <CounterWrapper>
             <PeopleAltRounded sx={{ fontSize: 32, color: "primary.main", mr: 1 }} />
             <Typography variant="h4" component="span" fontWeight="bold" color="primary">
-              <CountUp
-                end={visitorCount}
-                duration={2.5}
-                separator=","
-                delay={0.5}
-                useEasing={true}
-                enableScrollSpy={true}
-                scrollSpyDelay={500}
-              />
+              <CountUp end={visitorCount} duration={2.0} separator="," delay={0} useEasing={true} />
             </Typography>
-            <Typography variant="h6" component="span" color="text.secondary" ml={1}>
+            <Typography variant="h6" component="span" color="primary" ml={1}>
               명
             </Typography>
           </CounterWrapper>
-          <Typography variant="subtitle1" component="p" align="center" color="textSecondary">
-            의 사용자가 연애재판을 이용했습니다
-          </Typography>
+          <Button variant="contained" size="small" component={Link} href="/cases" endIcon={<ArrowForwardRounded />}>
+            판결 보러가기
+          </Button>
         </VisitorStatsSection>
 
         <HeroButtons>
@@ -95,14 +138,68 @@ const HomeContainer = () => {
         </HeroButtons>
       </HeroSection>
 
+      {/* AI 판사에게 의뢰하기 */}
+      <CharactersSection>
+        <Typography variant="h4" color="primary" gutterBottom align="center" fontWeight="bold" mb={1}>
+          AI 판사에게 의뢰하기
+        </Typography>
+        <Typography variant="body1" align="center" color="textSecondary" mb={3}>
+          당신의 연애 갈등을 판단할 AI 판사를 선택해보세요
+        </Typography>
+
+        <Stack id="characters-container" gap={3}>
+          {aiCharacters.map((character, index) => (
+            <CharacterCard
+              id={`character-${character.id}`}
+              key={character.id}
+              onClick={() => setSelectedCharacter(index)}
+              selected={selectedCharacter === index}
+            >
+              {/* 캐릭터 이미지 */}
+              <CharacterImageWrapper>
+                <Image src={character.image} alt={character.name} fill />
+              </CharacterImageWrapper>
+              {/* 캐릭터 정보 */}
+              <CharacterInfo>
+                {/* 캐릭터 이름 */}
+                <Typography variant="h6" color="primary" mb={1} fontWeight="bold">
+                  {character.name}
+                </Typography>
+                {/* 캐릭터 태그 */}
+                <Stack direction="row" columnGap={0.5}>
+                  {character.personalities.map((personality, index) => (
+                    <CharacterTag key={index}>{personality}</CharacterTag>
+                  ))}
+                </Stack>
+                {/* 캐릭터 특징 */}
+                <Typography variant="body2" color="text.secondary" mt={1}>
+                  {character.feature}
+                </Typography>
+              </CharacterInfo>
+            </CharacterCard>
+          ))}
+        </Stack>
+
+        <Box sx={{ mt: 4, textAlign: "center" }}>
+          <Button
+            variant="contained"
+            size="large"
+            component={Link}
+            href={`/case/new?judge=${aiCharacters[selectedCharacter].id}`}
+          >
+            이 판사에게 의뢰하기
+          </Button>
+        </Box>
+      </CharactersSection>
+
       {/* 주요 기능 섹션 */}
       <FeaturesSection>
         <Typography variant="h4" component="h2" gutterBottom align="center" fontWeight="bold" mb={4}>
           주요 기능
         </Typography>
-        <Grid container spacing={3}>
+        <Grid2 container spacing={3}>
           {features.map((feature, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+            <Stack key={index} width="100%">
               <FeatureCard>
                 <IconWrapper>{feature.icon}</IconWrapper>
                 <Typography variant="h6" component="h3" gutterBottom>
@@ -112,9 +209,9 @@ const HomeContainer = () => {
                   {feature.description}
                 </Typography>
               </FeatureCard>
-            </Grid>
+            </Stack>
           ))}
-        </Grid>
+        </Grid2>
       </FeaturesSection>
 
       {/* 현재 바로 시작하세요 섹션 */}
@@ -201,4 +298,48 @@ const CounterWrapper = styled(Box)`
   align-items: center;
   justify-content: center;
   margin: 8px 0;
+`;
+
+// AI 판사 섹션 스타일 컴포넌트
+const CharactersSection = styled(Box)`
+  padding: 48px 0;
+`;
+
+const CharacterCard = styled(Stack)<{ selected?: boolean }>`
+  ${mixinFlex("row")};
+  justify-content: space-between;
+  padding: 16px;
+  column-gap: 16px;
+  transition: all 0.3s ease;
+  border: 2px solid ${({ selected, theme }) => (selected ? theme.palette.primary.main : "transparent")};
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const CharacterImageWrapper = styled(Box)`
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+`;
+
+const CharacterInfo = styled(Box)`
+  flex: 1;
+  ${mixinFlex("column")};
+`;
+
+const CharacterTag = styled(Box)`
+  background-color: ${({ theme }) => theme.palette.primary.main};
+  color: ${({ theme }) => theme.palette.primary.contrastText};
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 10px;
+  display: inline-block;
 `;
