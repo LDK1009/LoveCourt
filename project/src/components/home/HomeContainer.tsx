@@ -166,7 +166,7 @@ const HomeContainer = () => {
           HOT
         </Typography>
       </Stack>
-      <HotCaseList rowGap={1}>
+      <HotCaseList rowGap={3}>
         {hotCase.length > 0 && hotCase.map((caseItem, idx) => <Case key={idx} caseItem={caseItem} hot={true} />)}
       </HotCaseList>
 
