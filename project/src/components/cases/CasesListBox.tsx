@@ -220,6 +220,7 @@ const CasesListBox = () => {
             pagination={{ clickable: true }} // 클릭 가능한 페이지네이션
             modules={[SwiperPagination, Autoplay]} // 사용할 모듈
             autoplay={{ delay: 3000, disableOnInteraction: false }} // 자동 재생 설정
+            loop={true} // 무한 루프 설정 추가
           >
             {/* HOT 케이스 목록 */}
             {hotCase.length > 0 &&
