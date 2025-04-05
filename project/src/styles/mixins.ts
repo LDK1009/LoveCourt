@@ -10,3 +10,18 @@ export const mixinFlex = (direction : "row" | "column") => css`
   justify-content: center;
   width: 100%;
 `;
+
+export const mixinBoxShadow = (depth: number) => css`
+  ${depth === 1 &&
+  css`
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1);
+  `}
+  ${depth === 2 &&
+  css`
+    box-shadow: 0 8px 8px 0 rgba(0, 0, 0, 0.1);
+  `}
+  ${depth === 3 &&
+  css`
+    box-shadow: 0 12px 12px 0 rgba(0, 0, 0, 0.1);
+  `}
+`;

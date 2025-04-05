@@ -4,7 +4,7 @@ import type { Case as CaseType } from "@/types/Case";
 import { Chip, Stack, Typography, styled, Button } from "@mui/material";
 import { LocalFireDepartmentRounded, VisibilityOutlined } from "@mui/icons-material";
 import Link from "next/link";
-import { mixinFlex } from "@/styles/mixins";
+import { mixinBoxShadow, mixinFlex } from "@/styles/mixins";
 
 interface CaseProps {
   caseItem: CaseType;
@@ -13,13 +13,13 @@ interface CaseProps {
 
 const Case = ({ caseItem, hot = false }: CaseProps) => {
   return (
-    <CaseContainer boxShadow={1}>
+    <CaseContainer>
       {hot && (
         <HotIconWrapper>
           <LocalFireDepartmentRounded color="primary" />
         </HotIconWrapper>
       )}
-      <Button component={Link} href={`/case/${caseItem.id}`} sx={{ padding: 0}}>
+      <Button component={Link} href={`/case/${caseItem.id}`} sx={{ padding: 0 }}>
         <CaseContent>
           <CaseText>
             {/* 케이스 제목 */}
@@ -65,6 +65,7 @@ const CaseContainer = styled(Stack)`
   row-gap: 16px;
   background-color: ${({ theme }) => theme.palette.background.paper};
   border-radius: 16px;
+  ${mixinBoxShadow(1)}
 `;
 
 const HotIconWrapper = styled(Stack)`
