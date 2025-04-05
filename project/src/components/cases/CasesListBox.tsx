@@ -209,7 +209,7 @@ const CasesListBox = () => {
           <Stack direction="row" alignItems="center" justifyContent="center" gap={1}>
             <LocalFireDepartmentRounded color="primary" sx={{ fontSize: 40 }} />
             <Typography variant="h4" color="primary" gutterBottom align="center" fontWeight="bold">
-              인기 사례
+              HOT
             </Typography>
           </Stack>
 
