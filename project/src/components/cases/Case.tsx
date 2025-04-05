@@ -22,20 +22,16 @@ const Case = ({ caseItem, hot = false }: CaseProps) => {
       <Button component={Link} href={`/case/${caseItem.id}`} sx={{ padding: 0 }}>
         <CaseContent>
           <CaseText>
-            {/* 케이스 제목 */}
             <CaseTitle variant={hot ? "h5" : "h6"} color={hot ? "primary" : "text.primary"}>
               {caseItem.title}
             </CaseTitle>
 
-            {/* 케이스 설명 */}
             <CaseDescription variant="body2" color="textSecondary">
               {caseItem.description}
             </CaseDescription>
           </CaseText>
 
-          {/* 조회수 */}
           <CaseMeta>
-            {/* 케이스 태그 */}
             <CaseTags>
               {caseItem.category && <Chip label={caseItem.category} size="small" color="primary" variant="outlined" />}
               {caseItem.tags.slice(0, 3).map((tag, index) => (
