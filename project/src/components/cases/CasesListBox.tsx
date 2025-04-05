@@ -14,17 +14,18 @@ import {
   styled,
   SelectChangeEvent,
   CircularProgress,
+  Stack,
 } from "@mui/material";
 import { mixinFlex } from "@/styles/mixins";
 import { SortOutlined } from "@mui/icons-material";
 import { getCases } from "@/service/cases";
-import { Case } from "@/types/Case";
+import { Case as CaseType } from "@/types/Case";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useRouter, useSearchParams } from "next/navigation";
 import InstallPWA from "../common/InstallPWA";
-import CaseCard from "./CaseCard";
+import Case from "./Case";
 
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
@@ -45,7 +46,7 @@ const CasesListBox = () => {
   const searchParams = useSearchParams();
   const searchTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const [cases, setCases] = useState<Case[]>([]);
+  const [cases, setCases] = useState<CaseType[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -80,7 +81,7 @@ const CasesListBox = () => {
       let filteredData = data;
       if (searchTerm) {
         filteredData = data?.filter(
-          (item: Case) =>
+          (item: CaseType) =>
             item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -88,7 +89,7 @@ const CasesListBox = () => {
       }
 
       // 정렬
-      filteredData?.sort((a: Case, b: Case) => {
+      filteredData?.sort((a: CaseType, b: CaseType) => {
         if (sortBy === "latest") {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         } else if (sortBy === "popular") {
@@ -218,7 +219,7 @@ const CasesListBox = () => {
 
         <CasesContainer>
           {cases.map((caseItem) => (
-            <CaseCard key={caseItem.id} caseItem={caseItem} />
+            <Case key={caseItem.id} caseItem={caseItem} hot={false} />
           ))}
         </CasesContainer>
 
@@ -249,7 +250,9 @@ const FilterControls = styled(Box)`
   flex-wrap: wrap;
 `;
 
-const CasesContainer = styled(Box)`
+const CasesContainer = styled(Stack)`
+  width: 100%;
+  row-gap: 16px;
   margin-top: 16px;
 `;
 
