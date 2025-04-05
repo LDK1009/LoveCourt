@@ -333,6 +333,11 @@ const FilterSection = styled(Stack)`
 const HotCaseListSwiper = styled(Swiper)`
   height: 250px;
   padding: 16px;
+  border-radius: 16px;
+
+  /* 그라데이션 배경 적용 */
+  background: linear-gradient(135deg, rgba(233, 30, 99, 0.1) 0%, rgba(244, 143, 177, 0.1) 100%);
+  box-shadow: 0 4px 4px rgba(233, 30, 99, 0.12);
 
   .swiper-pagination-bullet {
     background-color: ${({ theme }) => theme.palette.grey[400]};
