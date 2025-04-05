@@ -23,7 +23,7 @@ import Case from "../cases/Case";
 
 const HomeContainer = () => {
   // 문자 수
-  const [visitorCount] = useState(712);
+  const [visitorCount] = useState(769);
   // 선택된 캐릭터
   const [selectedCharacter, setSelectedCharacter] = useState(0);
   // 핫 케이스
