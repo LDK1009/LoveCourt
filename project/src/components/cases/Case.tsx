@@ -23,7 +23,7 @@ const Case = ({ caseItem, hot = false }: CaseProps) => {
         <CaseContent>
           <CaseText>
             {/* 케이스 제목 */}
-            <CaseTitle variant="h6" color={hot ? "primary" : "text.primary"}>
+            <CaseTitle variant={hot ? "h5" : "h6"} color={hot ? "primary" : "text.primary"}>
               {caseItem.title}
             </CaseTitle>
 
