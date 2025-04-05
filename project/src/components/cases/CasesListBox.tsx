@@ -17,8 +17,8 @@ import {
   Stack,
 } from "@mui/material";
 import { mixinFlex } from "@/styles/mixins";
-import { SortOutlined } from "@mui/icons-material";
-import { getCases } from "@/service/cases";
+import { LocalFireDepartmentRounded, SortOutlined } from "@mui/icons-material";
+import { getCases, getHotCase } from "@/service/cases";
 import { Case as CaseType } from "@/types/Case";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
@@ -26,6 +26,11 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useRouter, useSearchParams } from "next/navigation";
 import InstallPWA from "../common/InstallPWA";
 import Case from "./Case";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination as SwiperPagination, Navigation, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+
 
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
@@ -53,8 +58,24 @@ const CasesListBox = () => {
   const [category, setCategory] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("latest");
+  // 핫 케이스
+  const [hotCase, setHotCase] = useState<CaseType[] | []>([]);
 
   const limit = 10;
+
+  useEffect(() => {
+    const fetchHotCase = async () => {
+      const { data, error } = await getHotCase();
+
+      if (error) {
+        return;
+      } else {
+        setHotCase(data || []);
+      }
+    };
+
+    fetchHotCase();
+  }, []);
 
   useEffect(() => {
     // URL 파라미터에서 초기값 설정
@@ -176,9 +197,33 @@ const CasesListBox = () => {
           사례 모음
         </Typography>
 
-        <Typography variant="body1" color="textSecondary" paragraph>
-          다양한 연애 갈등 사례와 AI 판결 결과를 확인해보세요.
-        </Typography>
+        {/* HOT 게시물 카드 */}
+        <Stack spacing={2} mb={4}>
+          {/* HOT 아이콘 + 텍스트 */}
+          <Stack direction="row" alignItems="center" justifyContent="center" gap={1}>
+            <LocalFireDepartmentRounded color="primary" sx={{ fontSize: 40 }} />
+            <Typography variant="h4" color="primary" gutterBottom align="center" fontWeight="bold">
+              HOT
+            </Typography>
+          </Stack>
+          
+          {/* 페이지네이션 컬러 변경 */}
+          <HotCaseListSwiper
+            spaceBetween={30}
+            slidesPerView={1}
+            pagination={{ clickable: true }}
+            modules={[SwiperPagination, Autoplay]}
+            autoplay={{ delay: 5000, disableOnInteraction: false }}
+          >
+            {hotCase.length > 0 && 
+              hotCase.map((caseItem, idx) => (
+                <SwiperSlide key={idx}>
+                  <Case caseItem={caseItem} hot={true} />
+                </SwiperSlide>
+              ))
+            }
+          </HotCaseListSwiper>
+        </Stack>
 
         <FilterSection>
           <SearchBox>
@@ -238,6 +283,27 @@ export default CasesListBox;
 
 const FilterSection = styled(Box)`
   margin-bottom: 24px;
+`;
+const HotCaseListSwiper = styled(Swiper)`
+  height: 200px;
+  padding: 16px;
+  
+  /* 페이지네이션 컬러 변경 */
+  .swiper-pagination-bullet {
+    background-color: ${({ theme }) => theme.palette.grey[400]};
+    opacity: 0.5;
+  }
+  
+  .swiper-pagination-bullet-active {
+    background-color: ${({ theme }) => theme.palette.primary.main};
+    opacity: 1;
+  }
+  
+  /* 페이지네이션 크기 조정 (선택 사항) */
+  .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+  }
 `;
 
 const SearchBox = styled(Box)`
