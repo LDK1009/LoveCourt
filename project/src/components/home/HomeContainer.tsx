@@ -9,18 +9,25 @@ import {
   ShareRounded,
   PeopleAltRounded,
   ArrowForwardRounded,
+  LocalFireDepartmentRounded,
 } from "@mui/icons-material";
 import { mixinFlex } from "@/styles/mixins";
 import Link from "next/link";
 import InstallPWA from "@/components/common/InstallPWA";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CountUp from "react-countup";
 import Image from "next/image";
+import { getHotCase } from "@/service/cases";
+import { Case as CaseType } from "@/types/Case";
+import Case from "../cases/Case";
 
 const HomeContainer = () => {
   // 문자 수
   const [visitorCount] = useState(712);
+  // 선택된 캐릭터
   const [selectedCharacter, setSelectedCharacter] = useState(0);
+  // 핫 케이스
+  const [hotCase, setHotCase] = useState<CaseType[] | []>([]);
 
   const features = [
     {
@@ -101,6 +108,20 @@ const HomeContainer = () => {
     },
   ];
 
+  useEffect(() => {
+    const fetchHotCase = async () => {
+      const { data, error } = await getHotCase();
+
+      if (error) {
+        return;
+      } else {
+        setHotCase(data || []);
+      }
+    };
+
+    fetchHotCase();
+  }, []);
+
   return (
     <Container maxWidth="md">
       {/* 히어로 섹션 */}
@@ -137,6 +158,17 @@ const HomeContainer = () => {
           </Button>
         </HeroButtons>
       </HeroSection>
+
+      {/* HOT 게시물 카드 */}
+      <Stack direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+        <LocalFireDepartmentRounded color="primary" sx={{ fontSize: 40 }} />
+        <Typography variant="h4" color="primary" gutterBottom align="center" fontWeight="bold" mb={1}>
+          HOT
+        </Typography>
+      </Stack>
+      <HotCaseList rowGap={1}>
+        {hotCase.length > 0 && hotCase.map((caseItem, idx) => <Case key={idx} caseItem={caseItem} hot={true} />)}
+      </HotCaseList>
 
       {/* AI 판사에게 의뢰하기 */}
       <CharactersSection>
@@ -234,6 +266,8 @@ const HomeContainer = () => {
 };
 
 export default HomeContainer;
+
+const HotCaseList = styled(Stack)``;
 
 const HeroSection = styled(Box)`
   ${mixinFlex("column")};
