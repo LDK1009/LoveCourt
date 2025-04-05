@@ -22,7 +22,7 @@ const Case = ({ caseItem, hot = false }: CaseProps) => {
       <Button component={Link} href={`/case/${caseItem.id}`} sx={{ padding: 0 }}>
         <CaseContent>
           <CaseText>
-            <CaseTitle variant={hot ? "h5" : "h6"} color={hot ? "primary" : "text.primary"}>
+            <CaseTitle variant="h6" color={hot ? "primary" : "text.primary"}>
               {caseItem.title}
             </CaseTitle>
 
