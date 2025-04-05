@@ -4,6 +4,26 @@ import { CaseInput } from "@/types/Case";
 import { VoteStats } from "@/types/Vote";
 import { closeSnackbar, enqueueSnackbar } from "notistack";
 
+////////// 핫 케이스 조회
+export async function getHotCase() {
+  const response = await supabase
+    .from("cases")
+    .select("*, view_counts(count)")
+    .order("view_counts(count)", { ascending: false })
+    .limit(3);
+
+  // 데이터 형식 변환: view_counts: {count: 0} -> view_count: 0
+  const formattedData = response.data?.map((item) => {
+    const { view_counts, ...rest } = item;
+    return {
+      ...rest,
+      view_count: view_counts?.count || 0,
+    };
+  });
+
+  return { data: formattedData, error: response.error };
+}
+
 ////////// 새로운 케이스 생성
 export async function createCase(caseData: CaseInput) {
   // 로그인 여부 확인
