@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: { params: PropsType }): Promi
       },
       openGraph: {
         title: `${caseData.title} | 연애재판`,
-        description: caseData.description.substring(0, 160),
+        description: `${caseData.description.substring(0, 150)}${caseData.description.length > 150 ? '...' : ''} - AI 판사의 객관적인 판결을 확인해보세요.`,
         url: `/case/${id}`,
         images: [
           {
