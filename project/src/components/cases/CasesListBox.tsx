@@ -327,7 +327,7 @@ const FilterSection = styled(Stack)`
   flex-direction: row;
   align-items: center;
   column-gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 32px;
 `;
 
 const HotCaseListSwiper = styled(Swiper)`
@@ -370,7 +370,7 @@ const SortButton = styled(IconButton)`
 
 const CasesContainer = styled(Stack)`
   width: 100%;
-  row-gap: 16px;
+  row-gap: 24px;
   margin-top: 16px;
 `;
 
