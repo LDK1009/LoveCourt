@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Card, Container, Grid2, Stack, Typography, styled } from "@mui/material";
+import { Box, Button, Card, Container, Grid2, Stack, Typography, styled, Skeleton } from "@mui/material";
 import {
   GavelRounded,
   SearchRounded,
@@ -167,7 +167,15 @@ const HomeContainer = () => {
         </Typography>
       </Stack>
       <HotCaseList rowGap={3}>
-        {hotCase.length > 0 && hotCase.map((caseItem, idx) => <Case key={idx} caseItem={caseItem} hot={true} />)}
+        {hotCase.length > 0 ? (
+          hotCase.map((caseItem, idx) => <Case key={idx} caseItem={caseItem} hot={true} />)
+        ) : (
+          <>
+            {[...Array(3)].map((_, idx) => (
+              <Skeleton key={idx} variant="rectangular" sx={{ width: "100%", height: "120px", borderRadius: 2 }} />
+            ))}
+          </>
+        )}
       </HotCaseList>
 
       {/* AI 판사에게 의뢰하기 */}
