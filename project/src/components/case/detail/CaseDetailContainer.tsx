@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Card,
-  Chip,
   Container,
   Divider,
   Grid,
@@ -16,6 +15,7 @@ import {
   Avatar,
   useTheme,
   Grid2,
+  Stack,
 } from "@mui/material";
 import { mixinFlex } from "@/styles/mixins";
 import {
@@ -27,8 +27,6 @@ import {
   BookmarkOutlined,
   ThumbUpAlt,
   ThumbDownAlt,
-  AccessTimeOutlined,
-  VisibilityOutlined,
 } from "@mui/icons-material";
 import {
   getCaseById,
@@ -50,6 +48,7 @@ import "dayjs/locale/ko";
 import api from "@/lib/apiClient";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import Header from "./Header";
 
 dayjs.locale("ko");
 
@@ -224,103 +223,12 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      {/* 헤더 */}
-      <CaseHeader>
-        <Typography variant="h4" component="h1" gutterBottom>
-          {caseData.title}
-        </Typography>
+    <CaseContainer>
+      <Header caseData={caseData} />
 
-        <CaseMeta>
-          {/* 작성일 */}
-          <TimeWrapper>
-            <AccessTimeOutlined fontSize="small" />
-            <Typography variant="body2">{dayjs(caseData.created_at).format("YYYY년 MM월 DD일")}</Typography>
-          </TimeWrapper>
-
-          {/* 조회수 */}
-          <ViewWrapper>
-            <VisibilityOutlined fontSize="small" />
-            <Typography variant="body2">조회 {caseData.view_count}</Typography>
-          </ViewWrapper>
-        </CaseMeta>
-
-        {/* 태그 */}
-        <TagWrapper>
-          {caseData.tags.map((tag, index) => (
-            <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
-          ))}
-        </TagWrapper>
-      </CaseHeader>
-
-      {/* 사례 내용 */}
-      <CaseContent>
-        <Typography variant="body1" paragraph>
-          {caseData.description}
-        </Typography>
-
-        {/* 당사자 정보 */}
-        <ParticipantsCard>
-          <Typography variant="h6" gutterBottom>
-            당사자 정보
-          </Typography>
-
-          {/* 당사자 그리드 */}
-          <ParticipantsGrid>
-            <ParticipantBox>
-              <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 56, height: 56 }}>
-                {caseData.person_a.charAt(0)}
-              </Avatar>
-              <Typography variant="subtitle1" fontWeight="bold">
-                {caseData.person_a}
-              </Typography>
-            </ParticipantBox>
-
-            <Typography variant="h6" color="text.secondary">
-              VS
-            </Typography>
-
-            <ParticipantBox>
-              <Avatar sx={{ bgcolor: theme.palette.secondary.main, width: 56, height: 56 }}>
-                {caseData.person_b.charAt(0)}
-              </Avatar>
-              <Typography variant="subtitle1" fontWeight="bold">
-                {caseData.person_b}
-              </Typography>
-            </ParticipantBox>
-          </ParticipantsGrid>
-
-          <Divider sx={{ my: 2 }} />
-
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="body2" color="text.secondary">
-                연애 관계: {caseData.relationship}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="body2" color="text.secondary">
-                연애 기간: {caseData.duration}
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary">
-                카테고리: {caseData.category}
-              </Typography>
-            </Grid>
-          </Grid>
-        </ParticipantsCard>
-      </CaseContent>
 
       {/* 판결 결과 */}
       <VerdictSection>
-        <VerdictHeader>
-          <GavelRounded color="primary" />
-          <Typography variant="h5" component="h2">
-            AI 판결 결과
-          </Typography>
-        </VerdictHeader>
-
         {verdict ? (
           <VerdictResult>
             <Grid2 container spacing={1} alignItems="center">
@@ -376,6 +284,64 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
         )}
       </VerdictSection>
 
+      {/* 사례 내용 */}
+      <CaseContent>
+
+
+        {/* 당사자 정보 */}
+        <ParticipantsCard>
+          <Typography variant="h6" gutterBottom>
+            당사자 정보
+          </Typography>
+
+          {/* 당사자 그리드 */}
+          <ParticipantsGrid>
+            <ParticipantBox>
+              <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 56, height: 56 }}>
+                {caseData.person_a.charAt(0)}
+              </Avatar>
+              <Typography variant="subtitle1" fontWeight="bold">
+                {caseData.person_a}
+              </Typography>
+            </ParticipantBox>
+
+            <Typography variant="h6" color="text.secondary">
+              VS
+            </Typography>
+
+            <ParticipantBox>
+              <Avatar sx={{ bgcolor: theme.palette.secondary.main, width: 56, height: 56 }}>
+                {caseData.person_b.charAt(0)}
+              </Avatar>
+              <Typography variant="subtitle1" fontWeight="bold">
+                {caseData.person_b}
+              </Typography>
+            </ParticipantBox>
+          </ParticipantsGrid>
+
+          <Divider sx={{ my: 2 }} />
+
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="body2" color="text.secondary">
+                연애 관계: {caseData.relationship}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="body2" color="text.secondary">
+                연애 기간: {caseData.duration}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="body2" color="text.secondary">
+                카테고리: {caseData.category}
+              </Typography>
+            </Grid>
+          </Grid>
+        </ParticipantsCard>
+      </CaseContent>
+
+      {/* 투표 섹션 */}
       <VoteSection>
         <Typography variant="h5" component="h2" gutterBottom>
           여러분의 의견은?
@@ -491,6 +457,7 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
         </VoteStats>
       </VoteSection>
 
+      {/* 북마크 공유 버튼 */}
       <ActionButtons>
         <ActionButton
           variant="outlined"
@@ -526,35 +493,15 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
           {nextCase ? `${nextCase.title}` : "다음 게시물 없음"}
         </Button>
       </NavigationContainer>
-    </Container>
+    </CaseContainer>
   );
 };
 
 export default CaseDetailContainer;
 
-const CaseHeader = styled(Box)`
-  margin-bottom: 24px;
-`;
-
-const CaseMeta = styled(Box)`
-  ${mixinFlex("row")};
-  gap: 16px;
-`;
-
-const TimeWrapper = styled(Box)`
-  ${mixinFlex("row")};
-  gap: 4px;
-  align-items: center;
-  justify-content: start;
-  color: ${({ theme }) => theme.palette.text.secondary};
-`;
-
-const ViewWrapper = styled(TimeWrapper)`
-  justify-content: end;
-`;
-
-const TagWrapper = styled(Box)`
-  margin-top: 12px;
+const CaseContainer = styled(Stack)`
+  padding: 16px;
+  row-gap: 16px;
 `;
 
 const CaseContent = styled(Box)`
@@ -583,13 +530,6 @@ const ParticipantBox = styled(Box)`
 
 const VerdictSection = styled(Box)`
   margin-bottom: 24px;
-`;
-
-const VerdictHeader = styled(Box)`
-  ${mixinFlex("row")};
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 16px;
 `;
 
 const VerdictResult = styled(Paper)`
