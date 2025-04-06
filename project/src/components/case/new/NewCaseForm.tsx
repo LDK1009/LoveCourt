@@ -110,7 +110,7 @@ const NewCaseForm = () => {
     <Container maxWidth="md">
       <FormPaper>
         <Typography variant="h4" component="h1" gutterBottom align="center" fontWeight="bold">
-          갈등 상황 입력
+          재판 청구서
         </Typography>
 
         {/* 단계 표시기 - 상하 배치 스타일 */}
