@@ -12,7 +12,7 @@ import ReviewSubmitStep from "./steps/ReviewSubmitStep";
 import IntensityCharacterSelectionStep from "./steps/IntensityCharacterSelectionStep";
 
 // 단계 제목 배열
-const steps = ["갈등 상황", "추가 정보", "판결 설정", "제출"];
+const steps = ["상황", "관계", "옵션", "제출"];
 
 const NewCaseForm = () => {
   // 라우터
