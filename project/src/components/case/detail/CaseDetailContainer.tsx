@@ -7,19 +7,16 @@ import {
   Card,
   Container,
   Divider,
-  Grid,
+  Grid2,
   LinearProgress,
-  Paper,
   Typography,
   styled,
   Avatar,
   useTheme,
-  Grid2,
   Stack,
 } from "@mui/material";
 import { mixinFlex } from "@/styles/mixins";
 import {
-  GavelRounded,
   ThumbUpAltOutlined,
   ThumbDownAltOutlined,
   ShareOutlined,
@@ -32,7 +29,6 @@ import {
   getCaseById,
   voteOnCase,
   bookmarkCase,
-  getVerdictByCaseId,
   getCaseVoteStats,
   checkBookmark,
   getPrevNextCase,
@@ -41,16 +37,11 @@ import { useAuthStore } from "@/store";
 import { enqueueSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { Case } from "@/types/Case";
-import { Verdict } from "@/types/Verdict";
 import type { VoteStats } from "@/types/Vote";
-import dayjs from "dayjs";
-import "dayjs/locale/ko";
-import api from "@/lib/apiClient";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Header from "./Header";
-
-dayjs.locale("ko");
+import VerdictSection from "./VerdictSection";
 
 interface CaseDetailContainerProps {
   caseId: number;
@@ -68,8 +59,7 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
   //////////////////////////////////////// State ////////////////////////////////////////
   // 사례 데이터
   const [caseData, setCaseData] = useState<Case | null>(null);
-  // 판결 데이터
-  const [verdict, setVerdict] = useState<Verdict | null>(null);
+
   // 투표 데이터
   const [voteStats, setVoteStats] = useState<VoteStats>({
     person_a: 0,
@@ -100,12 +90,6 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
       if (caseData) {
         setCaseData(caseData);
         setLoading(false);
-      }
-
-      // 판결 데이터 불러오기
-      const { data: verdictData } = await getVerdictByCaseId(caseId);
-      if (verdictData) {
-        setVerdict(verdictData);
       }
 
       // 투표 현황 불러오기
@@ -186,14 +170,6 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
     }
   };
 
-  // 판결 생성 요청
-  const handleGenerateVerdict = async () => {
-    setLoading(true);
-    await api.post("/verdicts/generate", { case_id: caseId });
-
-    enqueueSnackbar("AI가 판결을 생성 중입니다. 잠시 후 새로고침해 주세요.", { variant: "info" });
-  };
-
   // 로딩 상태
   if (loading) {
     return (
@@ -226,68 +202,11 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
     <CaseContainer>
       <Header caseData={caseData} />
 
-
-      {/* 판결 결과 */}
-      <VerdictSection>
-        {verdict ? (
-          <VerdictResult>
-            <Grid2 container spacing={1} alignItems="center">
-              <GavelRounded color="primary" />
-              <Typography variant="h5" gutterBottom color="primary" fontWeight="bold">
-                {verdict.verdict === "person_a" && `${caseData.person_b} 유죄`}
-                {verdict.verdict === "person_b" && `${caseData.person_a} 유죄`}
-                {verdict.verdict === "both" && `${caseData.person_a} 유죄 | ${caseData.person_b} 유죄`}
-                {verdict.verdict === "neither" && `${caseData.person_a} 무죄 | ${caseData.person_b} 무죄`}
-              </Typography>
-            </Grid2>
-
-            <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mt: 2 }}>
-              판결 근거
-            </Typography>
-            <VerdictText variant="body1" paragraph>
-              {/* {verdict.reasoning?.replace(/\\n/g, "\n")} */}
-              {verdict.reasoning}
-            </VerdictText>
-
-            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-              법률적 근거
-            </Typography>
-            <VerdictText variant="body1" paragraph>
-              {verdict.legal_basis?.replace(/\\n/g, "\n")}
-            </VerdictText>
-
-            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-              AI 코멘트
-            </Typography>
-            <VerdictText variant="body1">{verdict.ai_comment?.replace(/\\n/g, "\n")}</VerdictText>
-          </VerdictResult>
-        ) : (
-          <PendingVerdict>
-            <Typography variant="h6" color="text.secondary" gutterBottom>
-              AI가 판결을 분석 중입니다
-            </Typography>
-            <LinearProgress sx={{ mt: 2 }} />
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-              잠시만 기다려주세요. 판결 결과가 곧 제공됩니다.
-            </Typography>
-
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ mt: 3 }}
-              onClick={handleGenerateVerdict}
-              disabled={loading}
-            >
-              판결 생성 요청하기
-            </Button>
-          </PendingVerdict>
-        )}
-      </VerdictSection>
+      {/* 판결 섹션 */}
+      <VerdictSection caseId={caseId} caseData={caseData} />
 
       {/* 사례 내용 */}
       <CaseContent>
-
-
         {/* 당사자 정보 */}
         <ParticipantsCard>
           <Typography variant="h6" gutterBottom>
@@ -321,23 +240,23 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
 
           <Divider sx={{ my: 2 }} />
 
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+          <Grid2 container spacing={2}>
+            <Grid2>
               <Typography variant="body2" color="text.secondary">
                 연애 관계: {caseData.relationship}
               </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Grid2>
+            <Grid2>
               <Typography variant="body2" color="text.secondary">
                 연애 기간: {caseData.duration}
               </Typography>
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2>
               <Typography variant="body2" color="text.secondary">
                 카테고리: {caseData.category}
               </Typography>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </ParticipantsCard>
       </CaseContent>
 
@@ -526,24 +445,6 @@ const ParticipantBox = styled(Box)`
   ${mixinFlex("column")};
   gap: 8px;
   align-items: center;
-`;
-
-const VerdictSection = styled(Box)`
-  margin-bottom: 24px;
-`;
-
-const VerdictResult = styled(Paper)`
-  padding: 24px;
-  background-color: ${({ theme }) => theme.palette.background.default};
-`;
-
-const VerdictText = styled(Typography)`
-  white-space: pre-line;
-`;
-
-const PendingVerdict = styled(Paper)`
-  padding: 24px;
-  text-align: center;
 `;
 
 const VoteSection = styled(Box)`
