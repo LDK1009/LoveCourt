@@ -1,4 +1,5 @@
 import { TextField, Box, styled } from "@mui/material";
+import { RefObject } from 'react';
 
 const FormSection = styled(Box)`
   display: flex;
@@ -13,11 +14,12 @@ interface ConflictDescriptionStepProps {
     description: string;
   };
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  titleInputRef: RefObject<HTMLInputElement | null>;
 }
 
-const ConflictDescriptionStep = ({ caseData, handleChange }: ConflictDescriptionStepProps) => {
+const ConflictDescriptionStep = ({ caseData, handleChange, titleInputRef }: ConflictDescriptionStepProps) => {
   return (
-    <FormSection>
+    <FormSection>   
       <TextField
         fullWidth
         label="제목"
@@ -26,6 +28,7 @@ const ConflictDescriptionStep = ({ caseData, handleChange }: ConflictDescription
         onChange={handleChange}
         placeholder="예: 남자친구가 내 생일을 잊어버렸어요"
         margin="normal"
+        inputRef={titleInputRef}
         required
       />
       <TextField

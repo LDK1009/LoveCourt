@@ -10,6 +10,7 @@ import {
   Chip,
   styled,
 } from "@mui/material";
+import { RefObject } from 'react';
 
 interface AdditionalInfoStepProps {
   caseData: {
@@ -25,6 +26,7 @@ interface AdditionalInfoStepProps {
   setCurrentTag: (tag: string) => void;
   handleAddTag: () => void;
   handleDeleteTag: (tag: string) => void;
+  personAInputRef: RefObject<HTMLInputElement | null>;
 }
 
 const AdditionalInfoStep = ({
@@ -34,6 +36,7 @@ const AdditionalInfoStep = ({
   setCurrentTag,
   handleAddTag,
   handleDeleteTag,
+  personAInputRef
 }: AdditionalInfoStepProps) => {
   return (
     <FormSection>
@@ -47,12 +50,12 @@ const AdditionalInfoStep = ({
           placeholder="ex) 여자친구"
           margin="normal"
           required
+          inputRef={personAInputRef}
         />
         <TextField
           fullWidth
           label="피고(피고소인)"
           name="person_b"
-          value={caseData.person_b}
           onChange={handleChange}
           placeholder="ex) 남자친구"
           margin="normal"

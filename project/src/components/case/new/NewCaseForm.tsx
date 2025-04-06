@@ -1,11 +1,10 @@
 "use client"; // 클라이언트 컴포넌트 선언
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Box, Button, Container, Paper, Step, StepLabel, Stepper, Typography, styled } from "@mui/material"; // Material UI 컴포넌트 임포트
 import { useRouter } from "next/navigation"; // Next.js 라우터 훅
 import { enqueueSnackbar } from "notistack"; // 알림 표시 라이브러리
 import { createCase } from "@/service/cases"; // 케이스 생성 API 함수
-// import { useAuthStore } from "@/store"; // 인증 상태 관리 스토어
 import ConflictDescriptionStep from "./steps/ConflictDescriptionStep"; // 단계별 컴포넌트 임포트
 import AdditionalInfoStep from "./steps/AdditionalInfoStep";
 import ReviewSubmitStep from "./steps/ReviewSubmitStep";
@@ -36,6 +35,25 @@ const NewCaseForm = () => {
   const [currentTag, setCurrentTag] = useState("");
   // 제출 버튼 비활성화 여부
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
+
+  // 각 단계별 첫 번째 입력 필드에 대한 ref 생성
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const personAInputRef = useRef<HTMLInputElement>(null);
+
+  // activeStep이 변경될 때마다 해당 단계의 첫 번째 입력 필드에 포커스
+  useEffect(() => {
+    // 약간의 지연을 주어 DOM이 완전히 렌더링된 후 포커스가 적용되도록 함
+    const timer = setTimeout(() => {
+      if (activeStep === 0 && titleInputRef.current) {
+        titleInputRef.current.focus();
+      } else if (activeStep === 1 && personAInputRef.current) {
+        personAInputRef.current.focus();
+      }
+      // 마지막 단계(검토 및 제출)는 입력 필드가 없으므로 포커스 설정 불필요
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [activeStep]);
 
   // 다음 단계로 이동하는 함수
   const handleNext = () => {
@@ -129,7 +147,9 @@ const NewCaseForm = () => {
         </Box>
 
         {/* 첫 번째 단계: 갈등 상황 설명 */}
-        {activeStep === 0 && <ConflictDescriptionStep caseData={caseData} handleChange={handleChange} />}
+        {activeStep === 0 && (
+          <ConflictDescriptionStep caseData={caseData} handleChange={handleChange} titleInputRef={titleInputRef} />
+        )}
 
         {/* 두 번째 단계: 추가 정보 입력 */}
         {activeStep === 1 && (
@@ -140,6 +160,7 @@ const NewCaseForm = () => {
             setCurrentTag={setCurrentTag}
             handleAddTag={handleAddTag}
             handleDeleteTag={handleDeleteTag}
+            personAInputRef={personAInputRef}
           />
         )}
 
