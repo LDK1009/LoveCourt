@@ -1,20 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Card,
-  Container,
-  Divider,
-  Grid2,
-  LinearProgress,
-  Typography,
-  styled,
-  Avatar,
-  useTheme,
-  Stack,
-} from "@mui/material";
+import { Box, Button, Container, LinearProgress, Typography, styled, useTheme, Stack } from "@mui/material";
 import { mixinFlex } from "@/styles/mixins";
 import {
   ThumbUpAltOutlined,
@@ -42,12 +29,13 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Header from "./Header";
 import VerdictSection from "./VerdictSection";
+import PersonalSection from "./PersonalSection";
 
-interface CaseDetailContainerProps {
+interface PropsType {
   caseId: number;
 }
 
-const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
+const CaseDetailContainer = ({ caseId }: PropsType) => {
   //////////////////////////////////////// Hooks ////////////////////////////////////////
   // 테마
   const theme = useTheme();
@@ -205,112 +193,22 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
       {/* 판결 섹션 */}
       <VerdictSection caseId={caseId} caseData={caseData} />
 
-      {/* 사례 내용 */}
-      <CaseContent>
-        {/* 당사자 정보 */}
-        <ParticipantsCard>
-          <Typography variant="h6" gutterBottom>
-            당사자 정보
-          </Typography>
-
-          {/* 당사자 그리드 */}
-          <ParticipantsGrid>
-            <ParticipantBox>
-              <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 56, height: 56 }}>
-                {caseData.person_a.charAt(0)}
-              </Avatar>
-              <Typography variant="subtitle1" fontWeight="bold">
-                {caseData.person_a}
-              </Typography>
-            </ParticipantBox>
-
-            <Typography variant="h6" color="text.secondary">
-              VS
-            </Typography>
-
-            <ParticipantBox>
-              <Avatar sx={{ bgcolor: theme.palette.secondary.main, width: 56, height: 56 }}>
-                {caseData.person_b.charAt(0)}
-              </Avatar>
-              <Typography variant="subtitle1" fontWeight="bold">
-                {caseData.person_b}
-              </Typography>
-            </ParticipantBox>
-          </ParticipantsGrid>
-
-          <Divider sx={{ my: 2 }} />
-
-          <Grid2 container spacing={2}>
-            <Grid2>
-              <Typography variant="body2" color="text.secondary">
-                연애 관계: {caseData.relationship}
-              </Typography>
-            </Grid2>
-            <Grid2>
-              <Typography variant="body2" color="text.secondary">
-                연애 기간: {caseData.duration}
-              </Typography>
-            </Grid2>
-            <Grid2>
-              <Typography variant="body2" color="text.secondary">
-                카테고리: {caseData.category}
-              </Typography>
-            </Grid2>
-          </Grid2>
-        </ParticipantsCard>
-      </CaseContent>
+      {/* 당사자 정보 섹션 */}
+      <PersonalSection caseData={caseData} />
 
       {/* 투표 섹션 */}
       <VoteSection>
-        <Typography variant="h5" component="h2" gutterBottom>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
           여러분의 의견은?
         </Typography>
+        <Typography variant="body1">누구의 입장이 더 타당하다고 생각하시나요?</Typography>
 
-        <Typography variant="body1">이 갈등 상황에서 누구의 입장이 더 타당하다고 생각하시나요?</Typography>
-
-        <VoteButtons>
-          <VoteButton
-            variant={userVote === "person_a" ? "contained" : "outlined"}
-            color={userVote === "person_a" ? "primary" : "inherit"}
-            onClick={() => handleVote("person_a")}
-            startIcon={userVote === "person_a" ? <ThumbUpAlt /> : <ThumbUpAltOutlined />}
-          >
-            {caseData.person_a}의 입장
-          </VoteButton>
-
-          <VoteButton
-            variant={userVote === "person_b" ? "contained" : "outlined"}
-            color={userVote === "person_b" ? "secondary" : "inherit"}
-            onClick={() => handleVote("person_b")}
-            startIcon={userVote === "person_b" ? <ThumbUpAlt /> : <ThumbUpAltOutlined />}
-          >
-            {caseData.person_b}의 입장
-          </VoteButton>
-
-          <VoteButton
-            variant={userVote === "both" ? "contained" : "outlined"}
-            color={userVote === "both" ? "success" : "inherit"}
-            onClick={() => handleVote("both")}
-            startIcon={userVote === "both" ? <ThumbUpAlt /> : <ThumbUpAltOutlined />}
-          >
-            둘 다 일리 있음
-          </VoteButton>
-
-          <VoteButton
-            variant={userVote === "neither" ? "contained" : "outlined"}
-            color={userVote === "neither" ? "error" : "inherit"}
-            onClick={() => handleVote("neither")}
-            startIcon={userVote === "neither" ? <ThumbDownAlt /> : <ThumbDownAltOutlined />}
-          >
-            둘 다 재고 필요
-          </VoteButton>
-        </VoteButtons>
-
-        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+        {/* 투표 현황 */}
+        <Typography variant="caption" color="text.secondary">
           투표 현황 (총 {voteStats.total}표)
         </Typography>
 
-        <VoteStats>
+        <VoteStatsWrapper>
           <VoteStatItem>
             <VoteStatLabel variant="body2">{caseData.person_a}의 입장</VoteStatLabel>
             <VoteStatBar>
@@ -373,7 +271,46 @@ const CaseDetailContainer = ({ caseId }: CaseDetailContainerProps) => {
               %)
             </VoteStatValue>
           </VoteStatItem>
-        </VoteStats>
+        </VoteStatsWrapper>
+
+        {/* 투표 버튼 */}
+        <VoteButtons>
+          <VoteButton
+            variant={userVote === "person_a" ? "contained" : "outlined"}
+            color={userVote === "person_a" ? "primary" : "inherit"}
+            onClick={() => handleVote("person_a")}
+            startIcon={userVote === "person_a" ? <ThumbUpAlt /> : <ThumbUpAltOutlined />}
+          >
+            {caseData.person_a}의 입장
+          </VoteButton>
+
+          <VoteButton
+            variant={userVote === "person_b" ? "contained" : "outlined"}
+            color={userVote === "person_b" ? "secondary" : "inherit"}
+            onClick={() => handleVote("person_b")}
+            startIcon={userVote === "person_b" ? <ThumbUpAlt /> : <ThumbUpAltOutlined />}
+          >
+            {caseData.person_b}의 입장
+          </VoteButton>
+
+          <VoteButton
+            variant={userVote === "both" ? "contained" : "outlined"}
+            color={userVote === "both" ? "success" : "inherit"}
+            onClick={() => handleVote("both")}
+            startIcon={userVote === "both" ? <ThumbUpAlt /> : <ThumbUpAltOutlined />}
+          >
+            둘 다 일리 있음
+          </VoteButton>
+
+          <VoteButton
+            variant={userVote === "neither" ? "contained" : "outlined"}
+            color={userVote === "neither" ? "error" : "inherit"}
+            onClick={() => handleVote("neither")}
+            startIcon={userVote === "neither" ? <ThumbDownAlt /> : <ThumbDownAltOutlined />}
+          >
+            둘 다 재고 필요
+          </VoteButton>
+        </VoteButtons>
       </VoteSection>
 
       {/* 북마크 공유 버튼 */}
@@ -423,30 +360,6 @@ const CaseContainer = styled(Stack)`
   row-gap: 16px;
 `;
 
-const CaseContent = styled(Box)`
-  margin-bottom: 24px;
-  white-space: pre-line;
-`;
-
-const ParticipantsCard = styled(Card)`
-  padding: 16px;
-  margin-top: 24px;
-`;
-
-const ParticipantsGrid = styled(Box)`
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 16px;
-  align-items: center;
-  margin: 16px 0;
-`;
-
-const ParticipantBox = styled(Box)`
-  ${mixinFlex("column")};
-  gap: 8px;
-  align-items: center;
-`;
-
 const VoteSection = styled(Box)`
   margin-bottom: 24px;
 `;
@@ -466,9 +379,7 @@ const VoteButton = styled(Button)`
   padding: 12px;
 `;
 
-const VoteStats = styled(Box)`
-  margin-top: 24px;
-`;
+const VoteStatsWrapper = styled(Box)``;
 
 const VoteStatItem = styled(Box)`
   margin-bottom: 12px;
