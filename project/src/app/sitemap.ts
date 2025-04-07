@@ -1,9 +1,10 @@
 import { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  const supabaseUrl = process.env.SUPABASE_URL!;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   // 기본 URL 목록
   const baseUrls = [
