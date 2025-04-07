@@ -1,25 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Button, Container, LinearProgress, Typography, styled, useTheme, Stack } from "@mui/material";
+import { Box, Button, Container, LinearProgress, Typography, styled, Stack, Divider, useTheme } from "@mui/material";
 import { mixinFlex } from "@/styles/mixins";
-import {
-  ThumbUpAltOutlined,
-  ThumbDownAltOutlined,
-  ShareOutlined,
-  BookmarkBorderOutlined,
-  BookmarkOutlined,
-  ThumbUpAlt,
-  ThumbDownAlt,
-} from "@mui/icons-material";
-import {
-  getCaseById,
-  voteOnCase,
-  bookmarkCase,
-  getCaseVoteStats,
-  checkBookmark,
-  getPrevNextCase,
-} from "@/service/cases";
+import { ShareOutlined, BookmarkBorderOutlined, BookmarkOutlined } from "@mui/icons-material";
+import { getCaseById, bookmarkCase, getCaseVoteStats, checkBookmark, getPrevNextCase } from "@/service/cases";
 import { useAuthStore } from "@/store";
 import { enqueueSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
@@ -30,6 +15,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Header from "./Header";
 import VerdictSection from "./VerdictSection";
 import PersonalSection from "./PersonalSection";
+import VoteSection from "./VoteSection";
 
 interface PropsType {
   caseId: number;
@@ -37,7 +23,6 @@ interface PropsType {
 
 const CaseDetailContainer = ({ caseId }: PropsType) => {
   //////////////////////////////////////// Hooks ////////////////////////////////////////
-  // 테마
   const theme = useTheme();
   // 라우터
   const router = useRouter();
@@ -110,33 +95,10 @@ const CaseDetailContainer = ({ caseId }: PropsType) => {
   }, [caseId, user.isSignIn, user.uid]);
 
   //////////////////////////////////////// Functions ////////////////////////////////////////
-  // 투표 처리
-  const handleVote = async (vote: "person_a" | "person_b" | "both" | "neither") => {
-    const voteResponse = await voteOnCase(caseId, vote);
-
-    if (voteResponse.error) {
-      router.push("/auth/sign-in");
-      return;
-    }
-
-    // 투표 상태 업데이트
-    setVoteStats((prev) => {
-      const newStats = { ...prev };
-
-      // 이전 투표가 있으면 제거
-      if (userVote && userVote in newStats) {
-        newStats[userVote as keyof typeof newStats]--;
-      } else {
-        newStats.total++;
-      }
-
-      // 새 투표 추가
-      newStats[vote]++;
-
-      return newStats;
-    });
-
-    setUserVote(vote);
+  // 투표 상태 변경 핸들러
+  const handleVoteChange = (newStats: VoteStats, newUserVote: string) => {
+    setVoteStats(newStats);
+    setUserVote(newUserVote);
   };
 
   // 북마크 처리
@@ -197,121 +159,15 @@ const CaseDetailContainer = ({ caseId }: PropsType) => {
       <PersonalSection caseData={caseData} />
 
       {/* 투표 섹션 */}
-      <VoteSection>
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
-          여러분의 의견은?
-        </Typography>
-        <Typography variant="body1">누구의 입장이 더 타당하다고 생각하시나요?</Typography>
+      <VoteSection
+        caseId={caseId}
+        caseData={caseData}
+        initialVoteStats={voteStats}
+        initialUserVote={userVote}
+        onVoteChange={handleVoteChange}
+      />
 
-        {/* 투표 현황 */}
-        <Typography variant="caption" color="text.secondary">
-          투표 현황 (총 {voteStats.total}표)
-        </Typography>
-
-        <VoteStatsWrapper>
-          <VoteStatItem>
-            <VoteStatLabel variant="body2">{caseData.person_a}의 입장</VoteStatLabel>
-            <VoteStatBar>
-              <VoteStatFill
-                style={{
-                  width: `${voteStats.total > 0 ? (voteStats.person_a / voteStats.total) * 100 : 0}%`,
-                  backgroundColor: theme.palette.primary.main,
-                }}
-              />
-            </VoteStatBar>
-            <VoteStatValue>
-              {voteStats.person_a}표 (
-              {voteStats.total > 0 ? Math.round((voteStats.person_a / voteStats.total) * 100) : 0}%)
-            </VoteStatValue>
-          </VoteStatItem>
-
-          <VoteStatItem>
-            <VoteStatLabel variant="body2">{caseData.person_b}의 입장</VoteStatLabel>
-            <VoteStatBar>
-              <VoteStatFill
-                style={{
-                  width: `${voteStats.total > 0 ? (voteStats.person_b / voteStats.total) * 100 : 0}%`,
-                  backgroundColor: theme.palette.secondary.main,
-                }}
-              />
-            </VoteStatBar>
-            <VoteStatValue>
-              {voteStats.person_b}표 (
-              {voteStats.total > 0 ? Math.round((voteStats.person_b / voteStats.total) * 100) : 0}%)
-            </VoteStatValue>
-          </VoteStatItem>
-
-          <VoteStatItem>
-            <VoteStatLabel variant="body2">둘 다 일리 있음</VoteStatLabel>
-            <VoteStatBar>
-              <VoteStatFill
-                style={{
-                  width: `${voteStats.total > 0 ? (voteStats.both / voteStats.total) * 100 : 0}%`,
-                  backgroundColor: theme.palette.success.main,
-                }}
-              />
-            </VoteStatBar>
-            <VoteStatValue>
-              {voteStats.both}표 ({voteStats.total > 0 ? Math.round((voteStats.both / voteStats.total) * 100) : 0}%)
-            </VoteStatValue>
-          </VoteStatItem>
-
-          <VoteStatItem>
-            <VoteStatLabel variant="body2">둘 다 재고 필요</VoteStatLabel>
-            <VoteStatBar>
-              <VoteStatFill
-                style={{
-                  width: `${voteStats.total > 0 ? (voteStats.neither / voteStats.total) * 100 : 0}%`,
-                  backgroundColor: theme.palette.error.main,
-                }}
-              />
-            </VoteStatBar>
-            <VoteStatValue>
-              {voteStats.neither}표 ({voteStats.total > 0 ? Math.round((voteStats.neither / voteStats.total) * 100) : 0}
-              %)
-            </VoteStatValue>
-          </VoteStatItem>
-        </VoteStatsWrapper>
-
-        {/* 투표 버튼 */}
-        <VoteButtons>
-          <VoteButton
-            variant={userVote === "person_a" ? "contained" : "outlined"}
-            color={userVote === "person_a" ? "primary" : "inherit"}
-            onClick={() => handleVote("person_a")}
-            startIcon={userVote === "person_a" ? <ThumbUpAlt /> : <ThumbUpAltOutlined />}
-          >
-            {caseData.person_a}의 입장
-          </VoteButton>
-
-          <VoteButton
-            variant={userVote === "person_b" ? "contained" : "outlined"}
-            color={userVote === "person_b" ? "secondary" : "inherit"}
-            onClick={() => handleVote("person_b")}
-            startIcon={userVote === "person_b" ? <ThumbUpAlt /> : <ThumbUpAltOutlined />}
-          >
-            {caseData.person_b}의 입장
-          </VoteButton>
-
-          <VoteButton
-            variant={userVote === "both" ? "contained" : "outlined"}
-            color={userVote === "both" ? "success" : "inherit"}
-            onClick={() => handleVote("both")}
-            startIcon={userVote === "both" ? <ThumbUpAlt /> : <ThumbUpAltOutlined />}
-          >
-            둘 다 일리 있음
-          </VoteButton>
-
-          <VoteButton
-            variant={userVote === "neither" ? "contained" : "outlined"}
-            color={userVote === "neither" ? "error" : "inherit"}
-            onClick={() => handleVote("neither")}
-            startIcon={userVote === "neither" ? <ThumbDownAlt /> : <ThumbDownAltOutlined />}
-          >
-            둘 다 재고 필요
-          </VoteButton>
-        </VoteButtons>
-      </VoteSection>
+      <Divider sx={{ borderColor: theme.palette.primary.main }} />
 
       {/* 북마크 공유 버튼 */}
       <ActionButtons>
@@ -357,77 +213,28 @@ export default CaseDetailContainer;
 
 const CaseContainer = styled(Stack)`
   padding: 16px;
-  row-gap: 16px;
-`;
-
-const VoteSection = styled(Box)`
-  margin-bottom: 24px;
-`;
-
-const VoteButtons = styled(Box)`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin: 24px 0;
-
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const VoteButton = styled(Button)`
-  padding: 12px;
-`;
-
-const VoteStatsWrapper = styled(Box)``;
-
-const VoteStatItem = styled(Box)`
-  margin-bottom: 12px;
-`;
-
-const VoteStatLabel = styled(Typography)`
-  margin-bottom: 4px;
-  font-weight: 500;
-`;
-
-const VoteStatBar = styled(Box)`
-  width: 100%;
-  height: 8px;
-  background-color: ${({ theme }) => theme.palette.gray[200]};
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 4px;
-`;
-
-const VoteStatFill = styled(Box)`
-  height: 100%;
-  transition: width 0.3s ease;
-`;
-
-const VoteStatValue = styled(Typography)`
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.palette.text.secondary};
+  row-gap: 32px;
 `;
 
 const ActionButtons = styled(Box)`
   ${mixinFlex("row")};
   gap: 16px;
-  margin-top: 32px;
   justify-content: center;
 `;
 
 const ActionButton = styled(Button)`
   min-width: 120px;
+  flex: 1;
 `;
 
 // 이전/다음 게시물 네비게이션 컨테이너 스타일
-const NavigationContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "space-between",
-  gap: theme.spacing(2),
-  marginTop: theme.spacing(4),
-  marginBottom: theme.spacing(4),
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-  },
-}));
+const NavigationContainer = styled(Stack)`
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+`;
