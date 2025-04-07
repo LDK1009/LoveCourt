@@ -53,6 +53,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  console.log(caseUrls);
+
   // 모든 URL 합치기
   return [...baseUrls, ...caseUrls];
 }
