@@ -1,11 +1,7 @@
 import { MetadataRoute } from "next";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabaseClient";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabaseUrl = process.env.SUPABASE_URL!;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
   // 기본 URL 목록
   const baseUrls = [
     {
@@ -38,8 +34,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 데이터베이스에서 모든 케이스 가져오기
   const { data: cases, error } = await supabase
     .from("cases")
-    .select("id, updated_at")
-    .order("updated_at", { ascending: false });
+    .select("id, created_at")
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error("사이트맵 생성 중 오류 발생:", error);
@@ -49,11 +45,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 케이스 URL 생성
   const caseUrls = cases.map((caseItem) => ({
     url: `https://www.love-court.site/case/${caseItem.id}`,
-    lastModified: new Date(caseItem.updated_at || new Date()),
+    lastModified: new Date(caseItem.created_at || new Date()),
     priority: 0.7,
   }));
-
-  console.log(caseUrls);
 
   // 모든 URL 합치기
   return [...baseUrls, ...caseUrls];
