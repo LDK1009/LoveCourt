@@ -5,7 +5,6 @@ import CommonBottomNavigation from "@/components/common/CommonBottomNavigation";
 import ClientSnackbarProvider from "@/lib/ClientSnackbarProvider";
 import Header from "@/components/common/Header";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import Script from "next/script";
 
 // SEO 메타데이터
 export const metadata: Metadata = {
@@ -61,15 +60,6 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4615072495258371"
           crossOrigin="anonymous"
         ></script>
-        <Script id="google-conversion-tracking" strategy="afterInteractive">
-          {`
-            gtag('event', 'conversion', {
-              'send_to': 'AW-16921971256/EDJPCJaHr6kaELiUg4U_',
-              'value': 1.0,
-              'currency': 'KRW'
-            });
-          `}
-        </Script>
       </head>
       <body>
         <AppRouterCacheProvider>
