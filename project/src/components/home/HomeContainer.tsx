@@ -23,7 +23,7 @@ import Case from "../cases/Case";
 
 const HomeContainer = () => {
   // 문자 수
-  const [visitorCount] = useState(769);
+  const [visitorCount] = useState(1043);
   // 선택된 캐릭터
   const [selectedCharacter, setSelectedCharacter] = useState(0);
   // 핫 케이스
@@ -138,7 +138,7 @@ const HomeContainer = () => {
           <CounterWrapper>
             <PeopleAltRounded sx={{ fontSize: 32, color: "primary.main", mr: 1 }} />
             <Typography variant="h4" component="span" fontWeight="bold" color="primary">
-              <CountUp end={visitorCount} duration={2.0} separator="," delay={0} useEasing={true} />
+              <CountUp end={visitorCount} duration={2.5} separator="," delay={0} useEasing={true} />
             </Typography>
             <Typography variant="h6" component="span" color="primary" ml={1}>
               명
