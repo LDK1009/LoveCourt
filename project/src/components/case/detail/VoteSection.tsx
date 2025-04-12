@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography, styled, useTheme } from "@mui/material";
+import { Box, Button, Grid2, Stack, Typography, styled, useTheme } from "@mui/material";
 import { Gavel, GavelOutlined } from "@mui/icons-material";
 import { Case } from "@/types/Case";
 import type { VoteStats } from "@/types/Vote";
@@ -126,6 +126,7 @@ const VoteSection = ({
         투표 현황 (총 {voteStats.total}표)
       </Typography>
 
+      {/* 투표 현황 */}
       <VoteStatsWrapper>
         {voteStatsData.map((stat) => (
           <VoteStatItem key={stat.key}>
@@ -146,17 +147,18 @@ const VoteSection = ({
       </VoteStatsWrapper>
 
       {/* 투표 버튼 */}
-      <VoteButtons>
-        {voteButtonsData.map((button) => (
-          <VoteButton
-            key={button.key}
-            variant={userVote === button.key ? "contained" : "outlined"}
-            color={userVote === button.key ? button.color : "inherit"}
-            onClick={() => handleVote(button.key as "person_a" | "person_b" | "both")}
-            startIcon={button.icon}
-          >
-            {button.label}
-          </VoteButton>
+      <VoteButtons container spacing={1}>
+        {voteButtonsData.map((button, idx) => (
+          <VoteButtonGridItem key={button.key} size={idx === 2 ? 12 : 6}>
+            <VoteButton
+              variant={userVote === button.key ? "contained" : "outlined"}
+              color={userVote === button.key ? button.color : "inherit"}
+              onClick={() => handleVote(button.key as "person_a" | "person_b" | "both")}
+              startIcon={button.icon}
+            >
+              {button.label}
+            </VoteButton>
+          </VoteButtonGridItem>
         ))}
       </VoteButtons>
     </VoteSectionContainer>
@@ -167,12 +169,14 @@ export default VoteSection;
 
 const VoteSectionContainer = styled(Stack)``;
 
-const VoteButtons = styled(Stack)`
-  row-gap: 12px;
+const VoteButtons = styled(Grid2)`
   margin-top: 24px;
 `;
 
+const VoteButtonGridItem = styled(Grid2)``;
+
 const VoteButton = styled(Button)`
+  width: 100%;
   padding: 12px;
 `;
 
