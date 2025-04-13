@@ -62,11 +62,32 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         message: {
-          token: fcmToken,  // 사용자 기기의 FCM 토큰
+          token: fcmToken,  // 사용자 기기의 FCM 토큰 - 특정 기기에 알림을 보내기 위한 고유 식별자
           notification: {
-            title: `연애재판 | 배심원 평결이 도착했어요!`,  // 알림 제목
-            body: payload.record.comment,  // 알림 내용
+            title: `배심원 평결 도착!`,  // 알림 제목 - 사용자에게 표시되는 알림의 주요 헤더
+            body: payload.record.comment,  // 알림 내용 - 알림의 상세 메시지 텍스트
+            image: "https://www.love-court.site/img/logo-192.png", // 알림에 표시될 이미지 URL - 리치 알림을 위한 큰 이미지
+            icon: "https://www.love-court.site/img/logo-192.png", // 알림 아이콘 URL - 알림 표시 시 사용되는 작은 아이콘
           },
+          webpush: {
+            fcm_options: {
+              link: `https://www.love-court.site/case/${payload.record.case_id}` // 알림 클릭 시 이동할 URL - 웹 브라우저에서 알림 클릭 시 열릴 페이지
+            },
+            notification: {
+              icon: "https://www.love-court.site/img/logo-192.png", // 웹 푸시용 아이콘 - 웹 브라우저 알림에 표시될 아이콘
+              badge: "https://www.love-court.site/img/logo-192.png", // 알림 배지 아이콘 - 모바일 브라우저에서 상태 표시줄에 표시되는 작은 아이콘
+              actions: [
+                {
+                  action: "view_case",  // 액션 식별자 - 사용자가 액션 선택 시 앱에서 식별하는 키
+                  title: "사례 보기",   // 액션 버튼 텍스트 - 사용자에게 표시되는 버튼 레이블
+                  icon: "https://your-domain.com/path-to-action-icon.png"  // 액션 버튼 아이콘 - 액션 버튼에 표시되는 아이콘
+                }
+              ]
+            }
+          },
+          data: {
+            link: `https://www.love-court.site/case/${payload.record.case_id}` // 알림 클릭 시 이동할 URL - 웹 브라우저에서 알림 클릭 시 열릴 페이지
+          }
         },
       }),
     }

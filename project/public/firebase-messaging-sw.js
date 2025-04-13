@@ -54,8 +54,13 @@ self.addEventListener("push", function (e) {
 // ['푸쉬 알림 클릭 시 실행]
 self.addEventListener("notificationclick", function (event) {
   console.log("notification click");
+
   // 클릭 시 열릴 URL 설정
-  const url = "/";
+  const { link } = e.data.json().notification;
+
+  // 클릭 시 열릴 URL 설정
+  const url = link ? link : "/";
+
   // 알림 닫기
   event.notification.close();
   // 지정된 URL로 새 창 또는 탭 열기
