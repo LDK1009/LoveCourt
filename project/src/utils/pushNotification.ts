@@ -20,7 +20,7 @@ export async function requestNotificationPermission() {
   if (currentPermission !== "default") {
     return { data: null, error: "알림 권한 이미 확인됨" };
   }
-  
+
   // 알림 권한 요청 전 확인
   const isUserWantNotification = confirm("댓글 및 투표 알림을 받으시겠습니까?");
 
