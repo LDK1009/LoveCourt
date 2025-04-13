@@ -43,6 +43,12 @@ export async function requestNotificationPermission() {
 
 // FCM 토큰 발급
 export async function getFcmToken() {
+  const isFcmSupported = await isSupported();
+  // FCM 지원 여부 확인
+  if (!isFcmSupported) {
+    return { data: null, error: "이 브라우저는 FCM을 지원하지 않습니다." };
+  }
+
   // messaging이 undefined인 경우 처리
   if (!messaging) {
     return { data: null, error: "Firebase Messaging이 초기화되지 않았습니다." };
