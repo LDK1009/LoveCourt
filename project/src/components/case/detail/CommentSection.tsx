@@ -90,8 +90,8 @@ const CommentList = ({ comments }: { comments: CommentType[] }) => {
 
   return (
     <CommentsContainer>
-      {comments.map((el) => (
-        <CommentItem key={el.comment} comment={el.comment} nickname={el.nickname} />
+      {comments.map((el, idx) => (
+        <CommentItem key={idx} comment={el.comment} nickname={el.nickname} />
       ))}
     </CommentsContainer>
   );
