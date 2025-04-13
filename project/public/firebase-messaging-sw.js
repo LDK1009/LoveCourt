@@ -56,7 +56,7 @@ self.addEventListener("notificationclick", function (event) {
   console.log("notification click");
 
   // 클릭 시 열릴 URL 설정
-  const { link } = e.data.json().notification;
+  const { link } = event.data.json().notification;
 
   // 클릭 시 열릴 URL 설정
   const url = link ? link : "/";
