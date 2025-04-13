@@ -31,8 +31,19 @@ export async function createCase(caseData: CaseInput) {
   const response = await supabase.auth.getUser();
 
   // 알림 권한 요청
-  await requestNotificationPermission();
-    
+  const { error: notificationPermissionError } = await requestNotificationPermission();
+
+  if (notificationPermissionError) {
+    enqueueSnackbar(notificationPermissionError, { variant: "error" });
+  }
+
+  // 판결 시작
+  const verdictRequestSnackbarKey = enqueueSnackbar("판결 요청 중...", {
+    variant: "info",
+    persist: true, // 사용자가 닫을 때까지 스낵바 유지
+    autoHideDuration: null, // 자동으로 닫히지 않도록 설정
+  });
+
   // FCM 토큰 발급
   const { data: fcmToken, error: fcmTokenError } = await getFcmToken();
 
@@ -59,7 +70,8 @@ export async function createCase(caseData: CaseInput) {
     enqueueSnackbar("판결 요청 실패", { variant: "error" });
     return;
   } else {
-    enqueueSnackbar("판결 요청중...", { variant: "success" });
+    closeSnackbar(verdictRequestSnackbarKey);
+    enqueueSnackbar("판결 요청 성공", { variant: "success" });
     // 조회수 초기화
     await supabase
       .from("view_counts")
@@ -71,7 +83,7 @@ export async function createCase(caseData: CaseInput) {
   }
 
   // AI 판결 생성 요청
-  const snackbarKey = enqueueSnackbar("판결중...", {
+  const snackbarKey = enqueueSnackbar("판결 중...", {
     variant: "info",
     persist: true, // 사용자가 닫을 때까지 스낵바 유지
     autoHideDuration: null, // 자동으로 닫히지 않도록 설정
@@ -85,7 +97,7 @@ export async function createCase(caseData: CaseInput) {
   });
 
   if (verdictsResponse.error) {
-    enqueueSnackbar("AI 판결 생성 요청 실패", { variant: "error" });
+    enqueueSnackbar("판결 실패", { variant: "error" });
     return;
   }
 
@@ -96,13 +108,13 @@ export async function createCase(caseData: CaseInput) {
 
   if (insertVerdictError) {
     closeSnackbar(snackbarKey);
-    enqueueSnackbar("AI 판결 생성 실패", { variant: "error" });
+    enqueueSnackbar("판결 실패", { variant: "error" });
     return;
   }
 
   // 판결 생성 완료 알림
   closeSnackbar(snackbarKey);
-  enqueueSnackbar("판결 생성 완료", { variant: "success" });
+  enqueueSnackbar("판결 완료", { variant: "success" });
 
   return { data: caseResponse.data[0] };
 }

@@ -18,7 +18,7 @@ export async function requestNotificationPermission() {
   // 현재 알림 권한 확인
   const currentPermission = Notification.permission;
   if (currentPermission !== "default") {
-    return { data: null, error: "알림 권한 이미 확인됨" };
+    return { data: "알림 권한 이미 확인됨", error: null };
   }
 
   // 알림 권한 요청 전 확인
@@ -26,7 +26,7 @@ export async function requestNotificationPermission() {
 
   // 알림 거부
   if (!isUserWantNotification) {
-    return { data: null, error: "알림 거부" };
+    return { data: "알림 거부", error: null };
   }
 
   // 알림 권한 요청
@@ -34,7 +34,7 @@ export async function requestNotificationPermission() {
 
   // 알림 거부
   if (permission === "denied") {
-    return { data: null, error: "알림 거부" };
+    return { data: "알림 거부", error: null };
   }
 
   // ...알림 권한 허용 시 실행할 코드...
@@ -43,12 +43,6 @@ export async function requestNotificationPermission() {
 
 // FCM 토큰 발급
 export async function getFcmToken() {
-  const isFcmSupported = await isSupported();
-  // FCM 지원 여부 확인
-  if (!isFcmSupported) {
-    return { data: null, error: "이 브라우저는 FCM을 지원하지 않습니다." };
-  }
-
   // messaging이 undefined인 경우 처리
   if (!messaging) {
     return { data: null, error: "Firebase Messaging이 초기화되지 않았습니다." };
