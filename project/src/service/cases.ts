@@ -2,6 +2,7 @@ import api from "@/lib/apiClient";
 import { supabase } from "@/lib/supabaseClient";
 import { CaseInput } from "@/types/Case";
 import { VoteStats } from "@/types/Vote";
+import { getFcmToken, requestNotificationPermission } from "@/utils/pushNotification";
 import { closeSnackbar, enqueueSnackbar } from "notistack";
 
 ////////// 핫 케이스 조회
@@ -29,6 +30,17 @@ export async function createCase(caseData: CaseInput) {
   // 로그인 여부 확인
   const response = await supabase.auth.getUser();
 
+  // 알림 권한 요청
+  await requestNotificationPermission();
+    
+  // FCM 토큰 발급
+  const { data: fcmToken, error: fcmTokenError } = await getFcmToken();
+
+  if (fcmTokenError) {
+    enqueueSnackbar(fcmTokenError, { variant: "error" });
+  }
+
+  // 케이스 데이터 추출
   const { intensity, character, ...restCaseData } = caseData;
 
   // 케이스 생성
@@ -39,14 +51,15 @@ export async function createCase(caseData: CaseInput) {
       user_id: response.data.user?.id,
       status: "pending",
       view_count: 0,
+      fcm_token: fcmToken,
     })
     .select();
 
   if (caseResponse.error) {
-    enqueueSnackbar("케이스 생성 실패", { variant: "error" });
+    enqueueSnackbar("판결 요청 실패", { variant: "error" });
     return;
   } else {
-    enqueueSnackbar("케이스 생성 성공", { variant: "success" });
+    enqueueSnackbar("판결 요청중...", { variant: "success" });
     // 조회수 초기화
     await supabase
       .from("view_counts")
@@ -58,7 +71,7 @@ export async function createCase(caseData: CaseInput) {
   }
 
   // AI 판결 생성 요청
-  const snackbarKey = enqueueSnackbar("판결 생성 중...", {
+  const snackbarKey = enqueueSnackbar("판결중...", {
     variant: "info",
     persist: true, // 사용자가 닫을 때까지 스낵바 유지
     autoHideDuration: null, // 자동으로 닫히지 않도록 설정
@@ -252,7 +265,6 @@ export async function getCaseVoteStats(caseId: number) {
   return { data: stats, error: null };
 }
 
-
 ////////// 댓글 조회
 export async function getComments(caseId: number) {
   const response = await supabase.from("comments").select("*").eq("case_id", caseId);
@@ -261,11 +273,13 @@ export async function getComments(caseId: number) {
 
 ////////// 댓글 추가
 export async function addComment(caseId: number, comment: string, nickname: string) {
-  const response = await supabase.from("comments").insert({ case_id: caseId, comment: comment, nickname: nickname }).select();
+  const response = await supabase
+    .from("comments")
+    .insert({ case_id: caseId, comment: comment, nickname: nickname })
+    .select();
 
   return response;
 }
-
 
 ////////// 케이스 북마크
 export async function bookmarkCase(caseId: number) {
