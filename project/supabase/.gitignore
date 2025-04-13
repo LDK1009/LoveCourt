@@ -1,0 +1,17 @@
+# Supabase
+.branches
+.temp
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local
+
+# Firebase
+firebase-adminsdk.json
+service-account.json
+
+# Environment variables
+.env
+.env.*
+!.env.example
