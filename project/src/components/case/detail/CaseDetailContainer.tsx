@@ -16,6 +16,8 @@ import Header from "./Header";
 import VerdictSection from "./VerdictSection";
 import PersonalSection from "./PersonalSection";
 import VoteSection from "./VoteSection";
+import CommentSection from "./CommentSection";
+
 
 interface PropsType {
   caseId: number;
@@ -166,6 +168,9 @@ const CaseDetailContainer = ({ caseId }: PropsType) => {
         initialUserVote={userVote}
         onVoteChange={handleVoteChange}
       />
+
+      {/* 댓글 섹션 */}
+      <CommentSection caseId={caseId} />
 
       <Divider sx={{ borderColor: theme.palette.primary.main }} />
 

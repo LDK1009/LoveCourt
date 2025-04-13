@@ -252,6 +252,21 @@ export async function getCaseVoteStats(caseId: number) {
   return { data: stats, error: null };
 }
 
+
+////////// 댓글 조회
+export async function getComments(caseId: number) {
+  const response = await supabase.from("comments").select("*").eq("case_id", caseId);
+  return response;
+}
+
+////////// 댓글 추가
+export async function addComment(caseId: number, comment: string, nickname: string) {
+  const response = await supabase.from("comments").insert({ case_id: caseId, comment: comment, nickname: nickname }).select();
+
+  return response;
+}
+
+
 ////////// 케이스 북마크
 export async function bookmarkCase(caseId: number) {
   const userResponse = await supabase.auth.getUser();
