@@ -67,7 +67,6 @@ Deno.serve(async (req) => {
             title: `배심원 평결 도착!`,  // 알림 제목 - 사용자에게 표시되는 알림의 주요 헤더
             body: payload.record.comment,  // 알림 내용 - 알림의 상세 메시지 텍스트
             image: "https://www.love-court.site/img/logo-192.png", // 알림에 표시될 이미지 URL - 리치 알림을 위한 큰 이미지
-            icon: "https://www.love-court.site/img/logo-192.png", // 알림 아이콘 URL - 알림 표시 시 사용되는 작은 아이콘
           },
           webpush: {
             fcm_options: {
