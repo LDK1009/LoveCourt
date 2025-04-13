@@ -38,13 +38,14 @@ self.addEventListener("push", function (e) {
   }
 
   // 알림 정보 추출
-  const { title, body, image, tag } = e.data.json().notification;
+  const { title, body, image, tag, data } = e.data.json().notification;
 
   // 알림 옵션 설정 (제목, 본문, 아이콘, 태그 등)
   const notificationOptions = {
     body: body,
     icon: image,
     tag: tag,
+    data: data,
   };
 
   // 알림 실행
@@ -52,18 +53,18 @@ self.addEventListener("push", function (e) {
 });
 
 // ['푸쉬 알림 클릭 시 실행]
-self.addEventListener("notificationclick", function (event) {
-  console.log("notification click");
+self.addEventListener("notificationclick", function (e) {
+  console.log("notification click : ", e);
 
   // 클릭 시 열릴 URL 설정
-  const { link } = event.data.json().notification;
+  const urlData = e.notification.data.url;
 
   // 클릭 시 열릴 URL 설정
-  const url = link ? link : "/";
+  const url = urlData ? urlData : "/";
 
   // 알림 닫기
-  event.notification.close();
+  e.notification.close();
   // 지정된 URL로 새 창 또는 탭 열기
   // waitUntil은 비동기 작업이 완료될 때까지 Service Worker를 활성 상태로 유지합니다. 즉, 이 코드에서는 지정된 URL로 탭 열 때까지 Service worker가 활성 상태로 유지됩니다.
-  event.waitUntil(clients.openWindow(url));
+  e.waitUntil(clients.openWindow(url));
 });

@@ -81,12 +81,14 @@ Deno.serve(async (req) => {
                   title: "사례 보기",   // 액션 버튼 텍스트 - 사용자에게 표시되는 버튼 레이블
                   icon: "https://your-domain.com/path-to-action-icon.png"  // 액션 버튼 아이콘 - 액션 버튼에 표시되는 아이콘
                 }
-              ]
+              ],
+              data: {
+                url: `https://www.love-court.site/case/${payload.record.case_id}`,
+                caseId: payload.record.case_id.toString(),
+                commentId: payload.record.id.toString()
+              }
             }
           },
-          data: {
-            link: `https://www.love-court.site/case/${payload.record.case_id}` // 알림 클릭 시 이동할 URL - 웹 브라우저에서 알림 클릭 시 열릴 페이지
-          }
         },
       }),
     }
